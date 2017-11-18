@@ -21,11 +21,11 @@ import java.text.DateFormat
 
 fun Application.main() {
     Database.apply {
-        val host = System.getenv("DB_HOST")?: "127.0.0.1"
-        val port = System.getenv("DB_PORT")?: "3306"
-        val name = System.getenv("DB_NAME")?: "ktor-todo"
-        val user = System.getenv("DB_USER")?: "root"
-        val password = System.getenv("DB_PASS")?: ""
+        val host = gradleEnv("DB_HOST", "127.0.0.1")
+        val port = gradleEnv("DB_PORT", "3306")
+        val name = gradleEnv("DB_NAME", "ktor-todo")
+        val user = gradleEnv("DB_USER", "root")
+        val password = gradleEnv("DB_PASS", "")
         val driver = environment.config.config("database").property("driver").getString()
         connect("jdbc:mysql://$host:$port/$name?useSSL=false", driver, user, password)
     }
@@ -48,3 +48,5 @@ fun Application.main() {
 }
 
 data class Item(val key: String, val value: String)
+
+private fun gradleEnv(name: String, default: String): String = System.getenv(name)?: default
