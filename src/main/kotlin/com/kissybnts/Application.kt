@@ -1,5 +1,6 @@
 package com.kissybnts
 
+import com.kissybnts.table.sample
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -44,9 +45,17 @@ fun Application.main() {
         get("/items") {
             call.respond(HttpStatusCode.OK, Item("This is a key", "This is a value"))
         }
+        get("/sample") {
+            sample()
+            call.respond("OK")
+        }
     }
 }
 
 data class Item(val key: String, val value: String)
 
-private fun gradleEnv(name: String, default: String): String = System.getenv(name)?: default
+/**
+ * Try to get `ORG_GRADLE_PROJECT_***` environment variable.
+ */
+// TODO write test
+fun gradleEnv(name: String, default: String): String = System.getenv(name)?: default
