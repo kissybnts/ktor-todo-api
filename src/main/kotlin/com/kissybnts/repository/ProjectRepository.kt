@@ -18,15 +18,9 @@ data class ProjectJSON(
 }
 
 object ProjectRepository {
-    fun selectAll(userId: Int): List<ProjectJSON> = transaction { selectAllWithoutTransaction(userId) }
+    fun selectAll(userId: Int): List<ProjectJSON> = transaction { ProjectTable.select { ProjectTable.userId.eq(userId) }.map { ProjectJSON(it) } }
 
-    fun selectAllWithoutTransaction(userId: Int): List<ProjectJSON> {
-        return ProjectTable.select { ProjectTable.userId.eq(userId) }.map { ProjectJSON(it) }
-    }
-
-    fun select(id: Int): ProjectJSON? = transaction { selectWithoutTransaction(id) }
-
-    fun selectWithoutTransaction(id: Int): ProjectJSON? = ProjectTable.select { ProjectTable.id.eq(id) }.firstOrNull()?.let { ProjectJSON(it) }
+    fun select(id: Int): ProjectJSON? = transaction { ProjectTable.select { ProjectTable.id.eq(id) }.firstOrNull()?.let { ProjectJSON(it) } }
 
     fun insert(project: NewProject): ProjectJSON {
         val statement = transaction {
