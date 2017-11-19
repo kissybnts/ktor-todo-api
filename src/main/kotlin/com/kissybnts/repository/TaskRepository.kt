@@ -1,5 +1,6 @@
 package com.kissybnts.repository
 
+import com.kissybnts.table.ProjectTable
 import com.kissybnts.table.TaskTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
@@ -20,11 +21,18 @@ data class Task(val id: Int, val projectId: Int, val name: String, val descripti
 
 data class NewTask(val projectId: Int, val name: String, val description: String, val dueDate: DateTime)
 
-object TaskRespository {
-    fun selectAll(projectId: Int): List<Task> {
+object TaskRepository {
+    fun selectAll(userId: Int): List<Task> {
+        // transaction{}.map{}をするとNo transactionでエラーを吐く
         return transaction {
-            TaskTable.select { TaskTable.projectId.eq(projectId) }
-        }.map { Task(it) }
+            (TaskTable innerJoin ProjectTable).slice(TaskTable.columns).select { ProjectTable.userId.eq(userId) }.map { Task(it) }
+        }
+    }
+
+    fun selectAllBelongProject(projectId: Int): List<Task> {
+        return transaction {
+            TaskTable.select { TaskTable.projectId.eq(projectId) }.map { Task(it) }
+        }
     }
 
     fun select(id: Int): Task? = transaction { TaskTable.select { TaskTable.id.eq(id) }.firstOrNull()?.let { Task(it) } }

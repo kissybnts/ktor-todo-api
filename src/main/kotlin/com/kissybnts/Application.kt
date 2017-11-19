@@ -1,6 +1,7 @@
 package com.kissybnts
 
 import com.kissybnts.route.projects
+import com.kissybnts.route.tasks
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -36,8 +37,13 @@ fun Application.main() {
         get("/") {
             call.respond(HttpStatusCode.OK, "Hello from Ktor!")
         }
-        route("/projects") {
-            projects()
+        route("/v1") {
+            route("/projects") {
+                projects()
+            }
+            route("/tasks") {
+                tasks()
+            }
         }
     }
 }
