@@ -15,7 +15,7 @@ data class NewProject(val name: String, val description: String)
 
 fun Route.projects() {
     location<Index> {
-        method(HttpMethod.Get) {
+        GET {
             handle {
                 // TODO change to use the user id of which logged in user
                 val all = ProjectRepository.selectAll(1)
@@ -23,7 +23,7 @@ fun Route.projects() {
             }
         }
 
-        method(HttpMethod.Post) {
+        POST {
             handle {
                 val request = call.receive<NewProject>()
                 try {
@@ -39,7 +39,7 @@ fun Route.projects() {
     }
 
     location<ResourceId> {
-        method(HttpMethod.Get) {
+        GET {
             handle {
                 val id = call.parameters["id"]?.toIntOrNull()
                 if (id == null) {
