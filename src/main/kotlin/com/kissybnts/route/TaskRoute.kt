@@ -2,11 +2,9 @@ package com.kissybnts.route
 
 import com.kissybnts.repository.TaskRepository
 import io.ktor.application.call
-import io.ktor.http.HttpMethod
 import io.ktor.locations.location
 import io.ktor.response.respond
 import io.ktor.routing.Route
-import io.ktor.routing.method
 
 fun Route.tasks() {
     location<Index> {
@@ -18,8 +16,4 @@ fun Route.tasks() {
             }
         }
     }
-}
-
-fun Route.GET(body: Route.() -> Unit) {
-    method(HttpMethod.Get, body)
 }
