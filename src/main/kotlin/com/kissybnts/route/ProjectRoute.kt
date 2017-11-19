@@ -6,7 +6,7 @@ import io.ktor.application.call
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.location
-import io.ktor.request.receiveOrNull
+import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.method
@@ -25,13 +25,16 @@ fun Route.projects() {
 
         method(HttpMethod.Post) {
             handle {
-                val request = call.receiveOrNull<NewProject>()
-                if (request == null) {
+                val request = call.receive<NewProject>()
+                try {
+                    val project = ProjectRepository.insert(request)
+                    call.respond(project)
+                } catch (ex: IllegalStateException) {
                     call.badRequest()
-                    return@handle
+                } catch (ex: Exception) {
+                    call.internalServerError()
                 }
-                val project = ProjectRepository.insert(request)
-                call.respond(project)
+
             }
         }
     }
@@ -64,4 +67,8 @@ suspend fun ApplicationCall.notFound() {
 
 suspend fun ApplicationCall.badRequest() {
     respond(HttpStatusCode.BadRequest)
+}
+
+suspend fun ApplicationCall.internalServerError() {
+    respond(HttpStatusCode.InternalServerError)
 }
