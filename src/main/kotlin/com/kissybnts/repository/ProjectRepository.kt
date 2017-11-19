@@ -5,7 +5,6 @@ import com.kissybnts.table.ProjectTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
@@ -23,8 +22,7 @@ object ProjectRepository {
     fun selectAll(userId: Int): List<ProjectJSON> = transaction { selectAllWithoutTransaction(userId) }
 
     fun selectAllWithoutTransaction(userId: Int): List<ProjectJSON> {
-//        return ProjectTable.select { ProjectTable.userId.eq(userId) }.map { ProjectJSON(it) }
-        return ProjectTable.selectAll().map { ProjectJSON(it) }
+        return ProjectTable.select { ProjectTable.userId.eq(userId) }.map { ProjectJSON(it) }
     }
 
     fun select(id: Int): ProjectJSON? = transaction { selectWithoutTransaction(id) }
