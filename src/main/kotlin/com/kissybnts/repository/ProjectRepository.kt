@@ -12,7 +12,7 @@ data class ProjectJSON(
         val id: Int,
         val name: String,
         val description: String) {
-    constructor(result: ResultRow): this(
+    constructor(result: ResultRow) : this(
             result[ProjectTable.id],
             result[ProjectTable.name],
             result[ProjectTable.description])

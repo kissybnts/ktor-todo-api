@@ -34,7 +34,6 @@ fun Route.projects() {
                 } catch (ex: Exception) {
                     call.internalServerError()
                 }
-
             }
         }
     }
