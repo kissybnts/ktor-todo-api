@@ -66,8 +66,6 @@ private fun Database.Companion.setUp(databaseConfig: ApplicationConfig) {
         val user = gradleEnv("DB_USER", "root")
         val password = gradleEnv("DB_PASS", "")
         val driver = databaseConfig.property("driver").getString()
-        println(user)
-        println(password)
         connect("jdbc:mysql://$host:$port/$name?useSSL=false", driver, user, password)
     }
 }
