@@ -40,7 +40,6 @@ object TaskRepository {
     fun insert(newTask: NewTask): Task = transaction { insertWithoutTransaction(newTask) }
 
     fun insertWithoutTransaction(newTask: NewTask): Task {
-        val now = DateTime()
         val statement = transaction {
             TaskTable.insert {
                 it[TaskTable.projectId] = newTask.projectId
