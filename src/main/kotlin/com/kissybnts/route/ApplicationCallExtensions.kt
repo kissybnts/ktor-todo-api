@@ -8,6 +8,10 @@ fun ApplicationCall.getResourceId(): Int? {
     return parameters[ResourceId.parameterName]?.toIntOrNull()
 }
 
+suspend fun ApplicationCall.ok() {
+    respond(HttpStatusCode.OK)
+}
+
 suspend fun ApplicationCall.notFound() {
     respond(HttpStatusCode.NotFound)
 }

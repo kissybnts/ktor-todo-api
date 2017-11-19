@@ -5,6 +5,7 @@ import io.ktor.application.call
 import io.ktor.locations.location
 import io.ktor.response.respond
 import io.ktor.routing.Route
+import io.ktor.routing.patch
 
 fun Route.tasks() {
     location<Index> {
@@ -14,6 +15,19 @@ fun Route.tasks() {
                 val all = TaskRepository.selectAll(1)
                 call.respond(all)
             }
+        }
+    }
+
+    location<ResourceId> {
+        patch("/complete") {
+            val id = call.getResourceId()
+            if (id == null) {
+                call.badRequest()
+                return@patch
+            }
+
+            TaskRepository.complete(id)
+            call.ok()
         }
     }
 }
