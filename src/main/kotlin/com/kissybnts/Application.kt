@@ -53,7 +53,7 @@ fun Application.main() {
  * Try to get `ORG_GRADLE_PROJECT_***` environment variable.
  */
 // TODO write test
-fun gradleEnv(name: String, default: String): String = System.getenv(name) ?: default
+fun gradleEnv(name: String, default: String): String = System.getenv("ORG_GRADLE_PROJECT_$name") ?: default
 
 /**
  * set up database config with `ApplicationConfig` and environment variables.
@@ -66,6 +66,8 @@ private fun Database.Companion.setUp(databaseConfig: ApplicationConfig) {
         val user = gradleEnv("DB_USER", "root")
         val password = gradleEnv("DB_PASS", "")
         val driver = databaseConfig.property("driver").getString()
+        println(user)
+        println(password)
         connect("jdbc:mysql://$host:$port/$name?useSSL=false", driver, user, password)
     }
 }
