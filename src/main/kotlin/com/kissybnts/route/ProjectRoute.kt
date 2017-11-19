@@ -101,19 +101,3 @@ fun Route.projects() {
     }
 
 }
-
-fun ApplicationCall.getResourceId(): Int? {
-    return parameters[ResourceId.parameterName]?.toIntOrNull()
-}
-
-suspend fun ApplicationCall.notFound() {
-    respond(HttpStatusCode.NotFound)
-}
-
-suspend fun ApplicationCall.badRequest() {
-    respond(HttpStatusCode.BadRequest)
-}
-
-suspend fun ApplicationCall.internalServerError() {
-    respond(HttpStatusCode.InternalServerError)
-}
