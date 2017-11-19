@@ -1,5 +1,7 @@
 package com.kissybnts
 
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.kissybnts.route.projects
 import com.kissybnts.route.tasks
 import io.ktor.application.Application
@@ -9,15 +11,14 @@ import io.ktor.config.ApplicationConfig
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
-import io.ktor.gson.gson
 import io.ktor.http.HttpStatusCode
+import io.ktor.jackson.jackson
 import io.ktor.locations.Locations
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.routing.route
 import org.jetbrains.exposed.sql.Database
-import java.text.DateFormat
 
 fun Application.main() {
     val databaseConfig = environment.config.config("database")
@@ -27,9 +28,9 @@ fun Application.main() {
     install(CallLogging)
     install(Locations)
     install(ContentNegotiation) {
-        gson {
-            setDateFormat(DateFormat.LONG)
-            setPrettyPrinting()
+        jackson {
+            configure(SerializationFeature.INDENT_OUTPUT, true)
+            registerModule(JodaModule())
         }
     }
 
