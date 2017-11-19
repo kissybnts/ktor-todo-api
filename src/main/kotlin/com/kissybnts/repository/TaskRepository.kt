@@ -40,13 +40,11 @@ object TaskRepository {
     fun insert(newTask: NewTask): Task = transaction { insertWithoutTransaction(newTask) }
 
     fun insertWithoutTransaction(newTask: NewTask): Task {
-        val statement = transaction {
-            TaskTable.insert {
-                it[TaskTable.projectId] = newTask.projectId
-                it[TaskTable.name] = newTask.name
-                it[TaskTable.description] = newTask.description
-                it[TaskTable.dueDate] = newTask.dueDate
-            }
+        val statement = TaskTable.insert {
+            it[TaskTable.projectId] = newTask.projectId
+            it[TaskTable.name] = newTask.name
+            it[TaskTable.description] = newTask.description
+            it[TaskTable.dueDate] = newTask.dueDate
         }
         val id = statement.generatedKey?.toInt() ?: throw IllegalStateException("Generated id is null")
         return Task(id, newTask.projectId, newTask.name, newTask.description, newTask.dueDate.toString("yyyy/MM/dd"))
