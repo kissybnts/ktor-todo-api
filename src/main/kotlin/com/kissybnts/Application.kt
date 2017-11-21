@@ -2,9 +2,11 @@ package com.kissybnts
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.joda.JodaModule
+import com.kissybnts.route.ok
 import com.kissybnts.route.projects
 import com.kissybnts.route.tasks
 import io.ktor.application.Application
+import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.config.ApplicationConfig
@@ -14,6 +16,7 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.locations.Locations
+import io.ktor.request.uri
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.get
@@ -37,6 +40,21 @@ fun Application.main() {
     install(Routing) {
         get("/") {
             call.respond(HttpStatusCode.OK, "Hello from Ktor!")
+        }
+        route("/intercept"){
+            intercept(ApplicationCallPipeline.Infrastructure) {
+                println("Infrastructure, Intercepted!")
+            }
+            intercept(ApplicationCallPipeline.Call) {
+                println("Call, Intercepted!")
+            }
+            intercept(ApplicationCallPipeline.Fallback) {
+                println("Fallback, Intercepted!")
+            }
+            get {
+                println("get!")
+                call.ok()
+            }
         }
         route("/v1") {
             route("/projects") {
