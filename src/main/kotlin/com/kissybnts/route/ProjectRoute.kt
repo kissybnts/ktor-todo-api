@@ -14,7 +14,7 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
 
-@location("/projects") class Projects {
+@location("/projects") private class Projects {
     @location("{projectId}") data class Id(val projectId: Int) {
         @location("/tasks") class Tasks(private val id: Id) {
             fun projectId(): Int = id.projectId
