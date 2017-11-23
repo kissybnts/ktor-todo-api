@@ -2,7 +2,8 @@ package com.kissybnts
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.joda.JodaModule
-import com.kissybnts.route.ok
+import com.kissybnts.route.Index
+import com.kissybnts.extension.ok
 import com.kissybnts.route.projects
 import com.kissybnts.route.tasks
 import io.ktor.application.Application
@@ -19,8 +20,8 @@ import io.ktor.locations.Locations
 import io.ktor.request.uri
 import io.ktor.response.respond
 import io.ktor.routing.Routing
-import io.ktor.routing.get
 import io.ktor.routing.route
+import io.ktor.locations.get
 import org.jetbrains.exposed.sql.Database
 
 fun Application.main() {
@@ -38,7 +39,7 @@ fun Application.main() {
     }
 
     install(Routing) {
-        get("/") {
+        get<Index> {
             call.respond(HttpStatusCode.OK, "Hello from Ktor!")
         }
         route("/intercept"){
@@ -51,7 +52,7 @@ fun Application.main() {
             intercept(ApplicationCallPipeline.Fallback) {
                 println("Fallback, Intercepted!")
             }
-            get {
+            get<Index> {
                 println("get!")
                 call.ok()
             }

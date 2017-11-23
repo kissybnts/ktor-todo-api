@@ -1,5 +1,6 @@
-package com.kissybnts.route
+package com.kissybnts.extension
 
+import com.kissybnts.route.ResourceId
 import io.ktor.application.ApplicationCall
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond

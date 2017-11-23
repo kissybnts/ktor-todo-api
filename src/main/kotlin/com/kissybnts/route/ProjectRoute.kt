@@ -1,14 +1,17 @@
 package com.kissybnts.route
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.kissybnts.extension.*
 import com.kissybnts.repository.NewTask
 import com.kissybnts.repository.ProjectRepository
 import com.kissybnts.repository.TaskRepository
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
+import io.ktor.locations.get
 import io.ktor.locations.location
 import io.ktor.request.receive
+import io.ktor.request.uri
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.route
@@ -99,5 +102,5 @@ fun Route.projects() {
             }
         }
     }
-
 }
+

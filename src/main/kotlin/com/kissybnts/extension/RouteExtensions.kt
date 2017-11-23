@@ -1,4 +1,4 @@
-package com.kissybnts.route
+package com.kissybnts.extension
 
 import io.ktor.http.HttpMethod
 import io.ktor.routing.Route
