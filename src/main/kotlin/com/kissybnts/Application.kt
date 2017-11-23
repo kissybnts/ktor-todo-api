@@ -59,9 +59,7 @@ fun Application.main() {
         }
         route("/v1") {
             projects()
-            route("/tasks") {
-                tasks()
-            }
+            tasks()
         }
     }
 }
