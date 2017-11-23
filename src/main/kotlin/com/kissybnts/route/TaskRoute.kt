@@ -17,7 +17,7 @@ import io.ktor.routing.Route
 
 @location("/tasks") internal class Tasks {
     @location("/{taskId}") data class Id(val taskId: Int) {
-        @location("/complete") data class Complete(val id: Id) {
+        @location("/complete") data class Complete(private val id: Id) {
             val taskId: Int = id.taskId
         }
     }
