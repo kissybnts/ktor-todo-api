@@ -1,11 +1,16 @@
 package com.kissybnts.route
 
+import com.kissybnts.extension.badRequest
+import com.kissybnts.extension.internalServerError
 import com.kissybnts.extension.ok
 import com.kissybnts.repository.TaskRepository
+import com.kissybnts.request.CreateTaskRequest
 import io.ktor.application.call
 import io.ktor.locations.get
 import io.ktor.locations.location
 import io.ktor.locations.patch
+import io.ktor.locations.post
+import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
 
@@ -23,6 +28,18 @@ internal fun Route.tasks() {
         // TODO change to use the user id of which logged in user
         val all = TaskRepository.selectAll(1)
         call.respond(all)
+    }
+
+    post<Tasks> {
+        val request = call.receive<CreateTaskRequest>()
+        try {
+            val task = TaskRepository.insert(request)
+            call.respond(task)
+        } catch (ex: IllegalStateException) {
+            call.badRequest()
+        } catch (ex: Exception) {
+            call.internalServerError()
+        }
     }
 
     patch<Tasks.Id.Complete> {

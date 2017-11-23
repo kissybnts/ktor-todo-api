@@ -1,8 +1,8 @@
 package com.kissybnts.repository
 
+import com.kissybnts.request.CreateTaskRequest
 import com.kissybnts.table.ProjectTable
 import com.kissybnts.table.TaskTable
-import com.mysql.cj.api.xdevapi.UpdateStatement
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -21,8 +21,6 @@ data class Task(val id: Int, val projectId: Int, val name: String, val descripti
     )
 }
 
-data class NewTask(val projectId: Int, val name: String, val description: String, val dueDate: DateTime)
-
 object TaskRepository {
     fun selectAll(userId: Int): List<Task> {
         // transaction{}.map{}をするとNo transactionでエラーを吐く
@@ -39,17 +37,17 @@ object TaskRepository {
 
     fun select(id: Int): Task? = transaction { TaskTable.select { TaskTable.id.eq(id) }.firstOrNull()?.let { Task(it) } }
 
-    fun insert(newTask: NewTask): Task = transaction { insertWithoutTransaction(newTask) }
+    fun insert(request: CreateTaskRequest): Task = transaction { insertWithoutTransaction(request) }
 
-    private fun insertWithoutTransaction(newTask: NewTask): Task {
+    private fun insertWithoutTransaction(request: CreateTaskRequest): Task {
         val statement = TaskTable.insert {
-            it[TaskTable.projectId] = newTask.projectId
-            it[TaskTable.name] = newTask.name
-            it[TaskTable.description] = newTask.description
-            it[TaskTable.dueDate] = newTask.dueDate
+            it[TaskTable.projectId] = request.projectId
+            it[TaskTable.name] = request.name
+            it[TaskTable.description] = request.description
+            it[TaskTable.dueDate] = request.dueDate
         }
         val id = statement.generatedKey?.toInt() ?: throw IllegalStateException("Generated id is null")
-        return Task(id, newTask.projectId, newTask.name, newTask.description, newTask.dueDate.toString("yyyy/MM/dd"))
+        return Task(id, request.projectId, request.name, request.description, request.dueDate.toString("yyyy/MM/dd"))
     }
 
     fun complete(id: Int): Int = transaction { completeWithoutTransaction(id) }
