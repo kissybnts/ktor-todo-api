@@ -1,6 +1,6 @@
 package com.kissybnts.repository
 
-import com.kissybnts.route.NewProject
+import com.kissybnts.request.CreateProjectRequest
 import com.kissybnts.table.ProjectTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
@@ -22,7 +22,7 @@ object ProjectRepository {
 
     fun select(id: Int): ProjectJSON? = transaction { ProjectTable.select { ProjectTable.id.eq(id) }.firstOrNull()?.let { ProjectJSON(it) } }
 
-    fun insert(project: NewProject): ProjectJSON {
+    fun insert(project: CreateProjectRequest): ProjectJSON {
         val statement = transaction {
             ProjectTable.insert {
                 // TODO change to use the user id of which logged in user
