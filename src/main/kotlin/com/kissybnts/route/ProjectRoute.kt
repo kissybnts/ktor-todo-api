@@ -14,7 +14,9 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
 
-@location("/projects") private class Projects {
+// private modifier makes an exception when access to that class.
+// kotlin.reflect.full.IllegalCallableAccessException: Class kotlin.reflect.jvm.internal.FunctionCaller$Constructor can not access a member of class com.kissybnts.route.Projects with modifiers "public"
+@location("/projects") internal class Projects {
     @location("{projectId}") data class Id(val projectId: Int) {
         @location("/tasks") class Tasks(private val id: Id) {
             fun projectId(): Int = id.projectId
@@ -22,7 +24,7 @@ import io.ktor.routing.Route
     }
 }
 
-fun Route.projects() {
+internal fun Route.projects() {
 
     get<Projects> {
         // TODO change to use the user id of which logged in user
