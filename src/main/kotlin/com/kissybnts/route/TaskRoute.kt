@@ -5,6 +5,7 @@ import com.kissybnts.extension.internalServerError
 import com.kissybnts.extension.ok
 import com.kissybnts.repository.TaskRepository
 import com.kissybnts.request.CreateTaskRequest
+import com.kissybnts.request.UpdateTaskRequest
 import io.ktor.application.call
 import io.ktor.locations.get
 import io.ktor.locations.location
@@ -35,6 +36,18 @@ internal fun Route.tasks() {
         try {
             val task = TaskRepository.insert(request)
             call.respond(task)
+        } catch (ex: IllegalStateException) {
+            call.badRequest()
+        } catch (ex: Exception) {
+            call.internalServerError()
+        }
+    }
+
+    patch<Tasks.Id> {
+        val request = call.receive<UpdateTaskRequest>()
+        try {
+            TaskRepository.update(it.taskId, request)
+            call.ok()
         } catch (ex: IllegalStateException) {
             call.badRequest()
         } catch (ex: Exception) {

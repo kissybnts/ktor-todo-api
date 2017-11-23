@@ -1,6 +1,7 @@
 package com.kissybnts.repository
 
 import com.kissybnts.request.CreateTaskRequest
+import com.kissybnts.request.UpdateTaskRequest
 import com.kissybnts.table.ProjectTable
 import com.kissybnts.table.TaskTable
 import org.jetbrains.exposed.sql.ResultRow
@@ -22,6 +23,9 @@ data class Task(val id: Int, val projectId: Int, val name: String, val descripti
 }
 
 object TaskRepository {
+    // ---------------
+    // Select
+    // ---------------
     fun selectAll(userId: Int): List<Task> {
         // transaction{}.map{}をするとNo transactionでエラーを吐く
         return transaction {
@@ -37,6 +41,9 @@ object TaskRepository {
 
     fun select(id: Int): Task? = transaction { TaskTable.select { TaskTable.id.eq(id) }.firstOrNull()?.let { Task(it) } }
 
+    // ---------------
+    // Insert
+    // ---------------
     fun insert(request: CreateTaskRequest): Task = transaction { insertWithoutTransaction(request) }
 
     private fun insertWithoutTransaction(request: CreateTaskRequest): Task {
@@ -50,6 +57,26 @@ object TaskRepository {
         return Task(id, request.projectId, request.name, request.description, request.dueDate.toString("yyyy/MM/dd"))
     }
 
+    // ---------------
+    // Update
+    // ---------------
+    /**
+     * Update the specified task according to the request using transaction.
+     */
+    fun update(id: Int, request: UpdateTaskRequest): Int = transaction { updateWithoutTransaction(id, request) }
+
+    private fun updateWithoutTransaction(id: Int, request: UpdateTaskRequest): Int {
+        return TaskTable.update({TaskTable.id.eq(id)}) {
+            it[name] = request.name
+            it[description] = request.description
+            it[dueDate] = request.dueDate
+            it[updatedAt] = DateTime()
+        }
+    }
+
+    // ---------------
+    // Complete
+    // ---------------
     fun complete(id: Int): Int = transaction { completeWithoutTransaction(id) }
 
     private fun completeWithoutTransaction(id: Int): Int {
