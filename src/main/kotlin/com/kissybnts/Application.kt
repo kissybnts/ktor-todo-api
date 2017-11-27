@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.kissybnts.route.Index
 import com.kissybnts.extension.ok
+import com.kissybnts.route.login
 import com.kissybnts.route.projects
 import com.kissybnts.route.tasks
-import io.ktor.application.Application
-import io.ktor.application.ApplicationCallPipeline
-import io.ktor.application.call
-import io.ktor.application.install
+import io.ktor.application.*
+import io.ktor.client.HttpClient
+import io.ktor.client.backend.apache.ApacheBackend
 import io.ktor.config.ApplicationConfig
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
@@ -57,6 +57,14 @@ fun Application.main() {
                 call.ok()
             }
         }
+
+        val client = HttpClient(ApacheBackend)
+        environment.monitor.subscribe(ApplicationStopping) {
+            client.close()
+        }
+
+        login(client)
+
         route("/v1") {
             projects()
             tasks()
