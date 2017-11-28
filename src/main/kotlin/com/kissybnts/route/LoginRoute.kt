@@ -3,6 +3,7 @@ package com.kissybnts.route
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.kissybnts.model.GitHubUser
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.ktor.application.ApplicationCall
@@ -100,9 +101,6 @@ private suspend fun HttpClient.acquireUser(type: String, accessToken: String, co
         else -> throw IllegalArgumentException("Un supported type: $type")
     }
 }
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class GitHubUser(val id: Int, val login: String, val name: String, val avatarUrl: String)
 
 private suspend fun HttpClient.acquireGitHubUser(accessToken: String): GitHubUser {
     val response = call {
