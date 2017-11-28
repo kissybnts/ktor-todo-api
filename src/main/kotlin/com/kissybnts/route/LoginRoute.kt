@@ -2,6 +2,7 @@ package com.kissybnts.route
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.kissybnts.app.EnvironmentVariableKeys
 import com.kissybnts.model.GitHubUser
 import com.kissybnts.response.LoginResponse
 import io.jsonwebtoken.Jwts
@@ -37,16 +38,16 @@ import java.util.concurrent.Executors
 
 private val exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4)
 
-private val secretkey = System.getenv("JWT_SECRET_KEY")
+private val secretkey = System.getenv(EnvironmentVariableKeys.JWT_SECRET_KEY)
 
 private val loginProvider = listOf(
         OAuthServerSettings.OAuth2ServerSettings(
                 name = "github",
                 authorizeUrl = "https://github.com/login/oauth/authorize",
                 accessTokenUrl = "https://github.com/login/oauth/access_token",
-                clientId = System.getenv("GITHUB_CLIENT_ID"),
+                clientId = System.getenv(EnvironmentVariableKeys.GITHUB_CLIENT_ID),
                 defaultScopes = listOf("read:user"),
-                clientSecret = System.getenv("GITHUB_CLIENT_SECRET")
+                clientSecret = System.getenv(EnvironmentVariableKeys.GITHUB_CLIENT_SECRET)
         )
 ).associateBy { it.name }
 

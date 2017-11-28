@@ -2,6 +2,7 @@ package com.kissybnts
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.joda.JodaModule
+import com.kissybnts.app.EnvironmentVariableKeys
 import com.kissybnts.route.Index
 import com.kissybnts.extension.ok
 import com.kissybnts.route.login
@@ -72,22 +73,18 @@ fun Application.main() {
     }
 }
 
-/**
- * Try to get `ORG_GRADLE_PROJECT_***` environment variable.
- */
-// TODO write test
-fun gradleEnv(name: String, default: String): String = System.getenv("ORG_GRADLE_PROJECT_$name") ?: default
+fun getEnv(name: String, default: String): String = System.getenv(name)?: default
 
 /**
  * set up database config with `ApplicationConfig` and environment variables.
  */
 private fun Database.Companion.setUp(databaseConfig: ApplicationConfig) {
     apply {
-        val host = gradleEnv("DB_HOST", "127.0.0.1")
-        val port = gradleEnv("DB_PORT", "3306")
-        val name = gradleEnv("DB_NAME", "ktor-todo")
-        val user = gradleEnv("DB_USER", "root")
-        val password = gradleEnv("DB_PASS", "")
+        val host = getEnv(EnvironmentVariableKeys.Gradle.DB_HOST, "127.0.0.1")
+        val port = getEnv(EnvironmentVariableKeys.Gradle.DB_PORT, "3306")
+        val name = getEnv(EnvironmentVariableKeys.Gradle.DB_NAME, "ktor-todo")
+        val user = getEnv(EnvironmentVariableKeys.Gradle.DB_USER, "root")
+        val password = getEnv(EnvironmentVariableKeys.Gradle.DB_PASS, "")
         val driver = databaseConfig.property("driver").getString()
         connect("jdbc:mysql://$host:$port/$name?useSSL=false", driver, user, password)
     }
