@@ -1,9 +1,9 @@
 package com.kissybnts.route
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.kissybnts.model.GitHubUser
+import com.kissybnts.response.LoginResponse
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.ktor.application.ApplicationCall
@@ -19,7 +19,6 @@ import io.ktor.client.utils.url
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.locations.handle
 import io.ktor.locations.location
 import io.ktor.locations.locations
 import io.ktor.locations.oauthAtLocation
@@ -27,7 +26,6 @@ import io.ktor.request.host
 import io.ktor.request.port
 import io.ktor.response.respond
 import io.ktor.routing.Route
-import io.ktor.routing.method
 import io.ktor.routing.param
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import java.time.LocalDateTime
@@ -85,8 +83,6 @@ fun Route.login(client: HttpClient) {
         }
     }
 }
-
-data class LoginResponse(val user: User, val token: String)
 
 data class User(val id: Int, val name: String, val imageUrl: String, val providerType: String, val providerCode: String, val providerId: Int) {
     constructor(gitHubUser: GitHubUser, code: String): this(1, gitHubUser.name, gitHubUser.avatarUrl, "github", code, gitHubUser.id)
