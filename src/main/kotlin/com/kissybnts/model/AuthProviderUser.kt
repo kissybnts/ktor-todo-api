@@ -1,11 +1,16 @@
 package com.kissybnts.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.kissybnts.route.User
+import com.kissybnts.repository.CushioningUser
+import com.kissybnts.table.AuthProvider
+
+sealed class AuthProviderUser
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class GitHubUser(val id: Int, val login: String, val name: String, val avatarUrl: String) {
-    // TODO need to fetch from database or insert User record
-    // TODO remove String literal "github"
-    fun toUser(code: String): User = User(1, this.name, this.avatarUrl, "github", code, this.id)
+data class GitHubUser(val id: Int, val login: String, val name: String, val avatarUrl: String): AuthProviderUser()
+
+fun AuthProviderUser.toCushioningUser(providerCode: String): CushioningUser {
+    return when (this) {
+        is GitHubUser -> CushioningUser(name, avatarUrl, AuthProvider.GitHub, providerCode, id)
+    }
 }

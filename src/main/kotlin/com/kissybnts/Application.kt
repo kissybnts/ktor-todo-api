@@ -1,5 +1,6 @@
 package com.kissybnts
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.kissybnts.app.EnvironmentVariableKeys
@@ -35,6 +36,7 @@ fun Application.main() {
     install(ContentNegotiation) {
         jackson {
             configure(SerializationFeature.INDENT_OUTPUT, true)
+            propertyNamingStrategy = PropertyNamingStrategy.SNAKE_CASE
             registerModule(JodaModule())
         }
     }

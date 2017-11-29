@@ -4,7 +4,13 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.kissybnts.app.EnvironmentVariableKeys
 import com.kissybnts.model.GitHubUser
+import com.kissybnts.model.toCushioningUser
+import com.kissybnts.repository.CushioningUser
+import com.kissybnts.repository.TempUser
+import com.kissybnts.repository.User
+import com.kissybnts.repository.UserRepository
 import com.kissybnts.response.LoginResponse
+import com.kissybnts.response.UserResponse
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.ktor.application.ApplicationCall
@@ -66,7 +72,7 @@ fun Route.login(client: HttpClient) {
         handle {
             val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()?: throw IllegalStateException("Principal is null.")
 
-            val user = try {
+            val cushioningUser = try {
                 val type = call.parameters["type"] ?: throw IllegalStateException("Type is null.")
                 val code = call.parameters["code"] ?: throw IllegalStateException("code is null.")
                 client.acquireUser(type, principal.accessToken, code)
@@ -76,24 +82,21 @@ fun Route.login(client: HttpClient) {
                 return@handle
             }
 
-            // TODO insert user into database
+            // TODO need to check whether the request user already exist or not.
+            val user = UserRepository.insert(cushioningUser)
 
             val token = generateToken(user)
 
-            call.respond(LoginResponse(user, token))
+            call.respond(LoginResponse(UserResponse(user), token))
         }
     }
 }
 
-data class User(val id: Int, val name: String, val imageUrl: String, val providerType: String, val providerCode: String, val providerId: Int) {
-    constructor(gitHubUser: GitHubUser, code: String): this(1, gitHubUser.name, gitHubUser.avatarUrl, "github", code, gitHubUser.id)
-}
-
-private suspend fun HttpClient.acquireUser(type: String, accessToken: String, code: String): User {
+private suspend fun HttpClient.acquireUser(type: String, accessToken: String, code: String): CushioningUser {
     return when (type) {
         "github" -> {
             val githubUser = acquireGitHubUser(accessToken)
-            User(githubUser, code)
+            githubUser.toCushioningUser(code)
         }
         else -> throw IllegalArgumentException("Un supported type: $type")
     }
@@ -111,7 +114,7 @@ private suspend fun HttpClient.acquireGitHubUser(accessToken: String): GitHubUse
 private fun generateToken(user: User): String {
     val expiration = LocalDateTime.now().plusHours(1).atZone(ZoneId.systemDefault())
     return Jwts.builder()
-            .setSubject(user.id.toString())
+            .setSubject(user.id.value.toString())
             .setAudience("Ktor-todo")
             .signWith(SignatureAlgorithm.HS512, secretkey)
             .setExpiration(Date.from(expiration.toInstant()))

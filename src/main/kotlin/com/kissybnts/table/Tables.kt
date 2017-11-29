@@ -1,5 +1,6 @@
 package com.kissybnts.table
 
+import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.Table
 import org.joda.time.DateTime
 
@@ -15,18 +16,19 @@ enum class AuthProvider {
     GitHub
 }
 
-object UserTable : Table("users") {
-    val id = integer(ColumnNames.id).primaryKey().autoIncrement()
+object UserTable : IntIdTable("users") {
     val name = varchar(ColumnNames.name, 255)
     val imageUrl = varchar("image_url", 255)
-    val providerType = enumeration("provider_type", AuthProvider::class.java)
+    val providerType = enumerationByName("provider_type", 10, AuthProvider::class.java)
     val providerCode = varchar("provider_code", 255)
     val providerId = integer("provider_id")
+    val createdAt = datetime(ColumnNames.createdAt).default(DateTime())
+    val updatedAt = datetime(ColumnNames.updatedAt).default(DateTime())
 }
 
 object ProjectTable : Table("projects") {
     val id = integer("id").primaryKey().autoIncrement()
-    val userId = integer("user_id").references(UserTable.id)
+    val userId = reference("user_id", UserTable)
     val name = varchar(ColumnNames.name, 255)
     val description = text(ColumnNames.description)
     val createdAt = datetime(ColumnNames.createdAt).default(DateTime())

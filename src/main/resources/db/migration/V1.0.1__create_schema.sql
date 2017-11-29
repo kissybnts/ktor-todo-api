@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS users (
   id INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
+  image_url VARCHAR(255) NOT NULL,
   provider_type ENUM('GitHub') NOT NULL,
   provider_code VARCHAR(255) NOT NULL,
   provider_id INT NOT NULL,

@@ -2,6 +2,8 @@ package com.kissybnts.repository
 
 import com.kissybnts.request.CreateProjectRequest
 import com.kissybnts.table.ProjectTable
+import com.kissybnts.table.UserTable
+import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -26,7 +28,7 @@ object ProjectRepository {
         val statement = transaction {
             ProjectTable.insert {
                 // TODO change to use the user id of which logged in user
-                it[ProjectTable.userId] = 1
+                it[ProjectTable.userId] = EntityID(1, UserTable)
                 it[ProjectTable.name] = project.name
                 it[ProjectTable.description] = project.description
             }
