@@ -18,8 +18,10 @@ enum class AuthProvider {
 object UserTable : Table("users") {
     val id = integer(ColumnNames.id).primaryKey().autoIncrement()
     val name = varchar(ColumnNames.name, 255)
-    val authProvider = enumeration("auth_provider", AuthProvider::class.java)
-    val token = text("token")
+    val imageUrl = varchar("image_url", 255)
+    val providerType = enumeration("provider_type", AuthProvider::class.java)
+    val providerCode = varchar("provider_code", 255)
+    val providerId = integer("provider_id")
 }
 
 object ProjectTable : Table("projects") {
