@@ -6,11 +6,11 @@ import com.kissybnts.app.EnvironmentVariableKeys
 import com.kissybnts.model.GitHubUser
 import com.kissybnts.model.toCushioningUser
 import com.kissybnts.repository.CushioningUser
-import com.kissybnts.repository.TempUser
 import com.kissybnts.repository.User
 import com.kissybnts.repository.UserRepository
 import com.kissybnts.response.LoginResponse
 import com.kissybnts.response.UserResponse
+import com.kissybnts.table.AuthProvider
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.ktor.application.ApplicationCall
@@ -72,9 +72,10 @@ fun Route.login(client: HttpClient) {
         handle {
             val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()?: throw IllegalStateException("Principal is null.")
 
+            val type = call.parameters["type"] ?: throw IllegalStateException("Type is null.")
+            val code = call.parameters["code"] ?: throw IllegalStateException("code is null.")
+
             val cushioningUser = try {
-                val type = call.parameters["type"] ?: throw IllegalStateException("Type is null.")
-                val code = call.parameters["code"] ?: throw IllegalStateException("code is null.")
                 client.acquireUser(type, principal.accessToken, code)
             } catch (ex: Exception) {
                 println(ex.message)
@@ -82,8 +83,9 @@ fun Route.login(client: HttpClient) {
                 return@handle
             }
 
-            // TODO need to check whether the request user already exist or not.
-            val user = UserRepository.insert(cushioningUser)
+            val user = UserRepository.selectByProvider(AuthProvider.GitHub, cushioningUser.providerId)?.let {
+                UserRepository.loginUpdate(it, code)
+            } ?: UserRepository.insert(cushioningUser)
 
             val token = generateToken(user)
 
