@@ -4,12 +4,11 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.kissybnts.app.EnvironmentVariableKeys
 import com.kissybnts.model.GitHubUser
+import com.kissybnts.model.UserModel
 import com.kissybnts.model.toCushioningUser
 import com.kissybnts.repository.CushioningUser
-import com.kissybnts.repository.User
 import com.kissybnts.repository.UserRepository
 import com.kissybnts.response.LoginResponse
-import com.kissybnts.response.UserResponse
 import com.kissybnts.table.AuthProvider
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -89,7 +88,7 @@ fun Route.login(client: HttpClient) {
 
             val token = generateToken(user)
 
-            call.respond(LoginResponse(UserResponse(user), token))
+            call.respond(LoginResponse(user, token))
         }
     }
 }
@@ -113,10 +112,10 @@ private suspend fun HttpClient.acquireGitHubUser(accessToken: String): GitHubUse
     return jacksonObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE).readValue(response.bodyStream.reader(Charsets.UTF_8), GitHubUser::class.java)
 }
 
-private fun generateToken(user: User): String {
+private fun generateToken(user: UserModel): String {
     val expiration = LocalDateTime.now().plusHours(1).atZone(ZoneId.systemDefault())
     return Jwts.builder()
-            .setSubject(user.id.value.toString())
+            .setSubject(user.id.toString())
             .setAudience("Ktor-todo")
             .signWith(SignatureAlgorithm.HS512, secretkey)
             .setExpiration(Date.from(expiration.toInstant()))

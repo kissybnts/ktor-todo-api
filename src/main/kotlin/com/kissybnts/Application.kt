@@ -37,6 +37,7 @@ fun Application.main() {
         jackson {
             configure(SerializationFeature.INDENT_OUTPUT, true)
             propertyNamingStrategy = PropertyNamingStrategy.SNAKE_CASE
+            // TODO remove this, and then add JavaTime module and define default serializer/deserializer
             registerModule(JodaModule())
         }
     }

@@ -1,22 +1,16 @@
 package com.kissybnts.repository
 
+import com.kissybnts.extension.toJavaLocalDateTime
+import com.kissybnts.model.UserModel
 import com.kissybnts.table.AuthProvider
 import com.kissybnts.table.UserTable
 import org.jetbrains.exposed.dao.*
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
-
-class User(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<User>(UserTable)
-    var name by UserTable.name
-    var imageUrl by UserTable.imageUrl
-    var providerType by UserTable.providerType
-    var providerCode by UserTable.providerCode
-    var providerId by UserTable.providerId
-    var createdAt by UserTable.createdAt
-    var updatedAt by UserTable.updatedAt
-}
 
 data class CushioningUser(val name: String, val imageUrl: String, val providerType: AuthProvider, val providerCode: String, val providerId: Int)
 
@@ -24,38 +18,45 @@ object UserRepository {
     // ---------------
     // Select
     // ---------------
-    fun select(id: Int): User? = transaction { User.findById(id) }
+    fun select(id: Int): UserModel? = transaction { UserTable.select { UserTable.id.eq(id) } }.firstOrNull()?.let { UserModel(it) }
 
-    fun selectByProvider(providerType: AuthProvider, providerId: Int): User? {
+    fun selectByProvider(providerType: AuthProvider, providerId: Int): UserModel? {
         return transaction {
-            User.find { UserTable.providerType.eq(providerType) and UserTable.providerId.eq(providerId) }.firstOrNull()
-        }
+            UserTable.select{ UserTable.providerType.eq(providerType) and UserTable.providerId.eq(providerId) }.firstOrNull()
+        }?.let { UserModel(it) }
     }
 
     // ---------------
     // Insert
     // ---------------
-    fun insert(cushioningUser: CushioningUser): User = transaction { insertWithoutTransaction(cushioningUser) }
+    fun insert(cushioningUser: CushioningUser): UserModel = transaction { insertWithoutTransaction(cushioningUser) }
 
-    private fun insertWithoutTransaction(cushioningUser: CushioningUser): User {
-        return User.new {
-            name = cushioningUser.name
-            imageUrl = cushioningUser.imageUrl
-            providerType = cushioningUser.providerType
-            providerCode = cushioningUser.providerCode
-            providerId = cushioningUser.providerId
+    private fun insertWithoutTransaction(cushioningUser: CushioningUser): UserModel {
+        val now = DateTime()
+        val statement =  UserTable.insert {
+            it[UserTable.name] = cushioningUser.name
+            it[UserTable.imageUrl] = cushioningUser.imageUrl
+            it[UserTable.providerType] = cushioningUser.providerType
+            it[UserTable.providerCode] = cushioningUser.providerCode
+            it[UserTable.providerId] = cushioningUser.providerId
+            it[UserTable.createdAt] = now
+            it[UserTable.updatedAt] = now
         }
+        val id = statement.generatedKey?.toInt() ?: throw IllegalStateException("Generated id is null.")
+        return UserModel(id, cushioningUser.name, cushioningUser.imageUrl, cushioningUser.providerType, cushioningUser.providerCode, cushioningUser.providerId, now.toJavaLocalDateTime(), now.toJavaLocalDateTime())
     }
 
     // ---------------
     // Update
     // ---------------
-    fun loginUpdate(user: User, code: String): User {
-        return transaction {
-            user.apply {
-                providerCode = code
-                updatedAt = DateTime()
+    fun loginUpdate(user: UserModel, code: String): UserModel {
+        val now = DateTime()
+        transaction {
+            UserTable.update({ UserTable.id.eq(user.id)}) {
+                it[UserTable.providerCode] = code
+                it[UserTable.updatedAt] = now
             }
         }
+        return user.copy(providerCode = code, updatedAt = now.toJavaLocalDateTime())
     }
 }

@@ -1,3 +1,5 @@
 package com.kissybnts.response
 
-data class LoginResponse(val user: UserResponse, val token: String)
+import com.kissybnts.model.UserModel
+
+data class LoginResponse(val user: UserModel, val token: String)
