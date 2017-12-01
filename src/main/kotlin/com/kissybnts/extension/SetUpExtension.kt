@@ -33,6 +33,13 @@ internal fun Database.Companion.setUp(databaseConfig: ApplicationConfig) {
     }
 }
 
+/**
+ * set up the jackson configuration.
+ *
+ * - Indent output is enable
+ * - Naming strategy is snake case
+ * - Configure default format for LocalDateTime and LocalDate ( `yyyy/MM/dd HH:mm:ss` )
+ */
 internal fun ContentNegotiation.Configuration.jacksonSetUp() {
     jackson {
         configure(SerializationFeature.INDENT_OUTPUT, true)

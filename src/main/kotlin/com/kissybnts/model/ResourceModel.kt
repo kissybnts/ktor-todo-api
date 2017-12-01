@@ -22,7 +22,7 @@ data class UserModel(val id: Int,
                      @JsonIgnore
                      val updatedAt: LocalDateTime) {
     constructor(resultRow: ResultRow): this(
-            resultRow[UserTable.id].value,
+            resultRow[UserTable.id],
             resultRow[UserTable.name],
             resultRow[UserTable.imageUrl],
             resultRow[UserTable.providerType],
@@ -42,8 +42,8 @@ data class ProjectModel(val id: Int,
                         @JsonIgnore
                         val updatedAt: LocalDateTime) {
     constructor(resultRow: ResultRow): this(
-            resultRow[ProjectTable.id].value,
-            resultRow[ProjectTable.userId].value,
+            resultRow[ProjectTable.id],
+            resultRow[ProjectTable.userId],
             resultRow[ProjectTable.name],
             resultRow[ProjectTable.description],
             resultRow[ProjectTable.createdAt].toJavaLocalDateTime(),
@@ -62,8 +62,8 @@ data class TaskModel(val id: Int,
                      @JsonIgnore
                      val updatedAt: LocalDateTime) {
     constructor(resultRow: ResultRow): this(
-            resultRow[TaskTable.id].value,
-            resultRow[TaskTable.projectId].value,
+            resultRow[TaskTable.id],
+            resultRow[TaskTable.projectId],
             resultRow[TaskTable.name],
             resultRow[TaskTable.description],
             resultRow[TaskTable.dueDate].toJavaLocalDate(),

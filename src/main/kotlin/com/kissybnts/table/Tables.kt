@@ -1,6 +1,6 @@
 package com.kissybnts.table
 
-import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.sql.Table
 import org.joda.time.DateTime
 
 object ColumnNames {
@@ -15,7 +15,8 @@ enum class AuthProvider {
     GitHub
 }
 
-object UserTable : IntIdTable("users") {
+object UserTable : Table("users") {
+    val id = integer(ColumnNames.id).primaryKey().autoIncrement()
     val name = varchar(ColumnNames.name, 255)
     val imageUrl = varchar("image_url", 255)
     val providerType = enumerationByName("provider_type", 10, AuthProvider::class.java)
@@ -26,8 +27,9 @@ object UserTable : IntIdTable("users") {
     const val foreignKey = "user_id"
 }
 
-object ProjectTable : IntIdTable("projects") {
-    val userId = reference(UserTable.foreignKey, UserTable)
+object ProjectTable : Table("projects") {
+    val id = integer(ColumnNames.id).primaryKey().autoIncrement()
+    val userId = integer(UserTable.foreignKey).references(UserTable.id)
     val name = varchar(ColumnNames.name, 255)
     val description = text(ColumnNames.description)
     val createdAt = datetime(ColumnNames.createdAt).default(DateTime())
@@ -35,8 +37,9 @@ object ProjectTable : IntIdTable("projects") {
     const val foreignKey = "project_id"
 }
 
-object TaskTable : IntIdTable("tasks") {
-    val projectId = reference(ProjectTable.foreignKey, ProjectTable)
+object TaskTable : Table("tasks") {
+    val id = integer(ColumnNames.id).primaryKey().autoIncrement()
+    val projectId = integer(ProjectTable.foreignKey).references(ProjectTable.id)
     val name = varchar(ColumnNames.name, 255)
     val description = text(ColumnNames.description)
     //    val isRepeat = bool("is_repeat").default(false)

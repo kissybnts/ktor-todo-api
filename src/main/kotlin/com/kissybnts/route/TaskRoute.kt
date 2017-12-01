@@ -37,10 +37,13 @@ internal fun Route.tasks() {
             val task = TaskRepository.insert(request)
             call.respond(task)
         } catch (ex: IllegalStateException) {
+            println(ex.message)
             call.badRequest()
-        } catch (ex: Exception) {
-            call.internalServerError()
         }
+//        } catch (ex: Exception) {
+//            println(ex.message)
+//            call.internalServerError()
+//        }
     }
 
     patch<Tasks.Id> {
