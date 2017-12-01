@@ -1,5 +1,6 @@
 package com.kissybnts.model
 
+import com.kissybnts.extension.toJavaLocalDate
 import com.kissybnts.extension.toJavaLocalDateTime
 import com.kissybnts.table.AuthProvider
 import com.kissybnts.table.ProjectTable
@@ -7,6 +8,7 @@ import com.kissybnts.table.TaskTable
 import com.kissybnts.table.UserTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.joda.time.DateTime
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class UserModel(val id: Int,
@@ -49,7 +51,7 @@ data class TaskModel(val id: Int,
                      val projectId: Int,
                      val name: String,
                      val description: String,
-                     val dueDate: DateTime,
+                     val dueDate: LocalDate,
                      val isCompleted: Boolean,
                      val createdAt: LocalDateTime,
                      val updatedAt: LocalDateTime) {
@@ -58,7 +60,7 @@ data class TaskModel(val id: Int,
             resultRow[TaskTable.projectId].value,
             resultRow[TaskTable.name],
             resultRow[TaskTable.description],
-            resultRow[TaskTable.dueDate],
+            resultRow[TaskTable.dueDate].toJavaLocalDate(),
             resultRow[TaskTable.isCompleted],
             resultRow[TaskTable.createdAt].toJavaLocalDateTime(),
             resultRow[TaskTable.updatedAt].toJavaLocalDateTime()
