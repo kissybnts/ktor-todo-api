@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.kissybnts.app.EnvironmentVariableKeys
-import com.kissybnts.route.Index
 import com.kissybnts.extension.ok
+import com.kissybnts.route.Index
 import com.kissybnts.route.login
 import com.kissybnts.route.projects
 import com.kissybnts.route.tasks
@@ -19,11 +19,10 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.locations.Locations
-import io.ktor.request.uri
+import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.route
-import io.ktor.locations.get
 import org.jetbrains.exposed.sql.Database
 
 fun Application.main() {

@@ -4,7 +4,6 @@ import com.kissybnts.extension.toJavaLocalDateTime
 import com.kissybnts.model.UserModel
 import com.kissybnts.table.AuthProvider
 import com.kissybnts.table.UserTable
-import org.jetbrains.exposed.dao.*
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
