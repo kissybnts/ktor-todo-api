@@ -14,7 +14,7 @@ data class ProjectJSON(
         val name: String,
         val description: String) {
     constructor(result: ResultRow) : this(
-            result[ProjectTable.id],
+            result[ProjectTable.id].value,
             result[ProjectTable.name],
             result[ProjectTable.description])
 }

@@ -4,6 +4,7 @@ import com.kissybnts.request.CreateTaskRequest
 import com.kissybnts.request.UpdateTaskRequest
 import com.kissybnts.table.ProjectTable
 import com.kissybnts.table.TaskTable
+import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -13,8 +14,8 @@ import org.joda.time.DateTime
 
 data class Task(val id: Int, val projectId: Int, val name: String, val description: String, val dueDate: String, val isCompleted: Boolean = false) {
     constructor(resultRow: ResultRow): this(
-            resultRow[TaskTable.id],
-            resultRow[TaskTable.projectId],
+            resultRow[TaskTable.id].value,
+            resultRow[TaskTable.projectId].value,
             resultRow[TaskTable.name],
             resultRow[TaskTable.description],
             resultRow[TaskTable.dueDate].toString("yyyy/MM/dd"),
@@ -48,7 +49,7 @@ object TaskRepository {
 
     private fun insertWithoutTransaction(request: CreateTaskRequest): Task {
         val statement = TaskTable.insert {
-            it[TaskTable.projectId] = request.projectId
+            it[TaskTable.projectId] = EntityID(request.projectId, ProjectTable)
             it[TaskTable.name] = request.name
             it[TaskTable.description] = request.description
             it[TaskTable.dueDate] = request.dueDate

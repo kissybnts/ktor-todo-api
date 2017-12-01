@@ -33,15 +33,15 @@ data class ProjectModel(val id: Int,
                         val userId: Int,
                         val name: String,
                         val description: String,
-                        val createdAt: DateTime,
-                        val updatedAt: DateTime) {
+                        val createdAt: LocalDateTime,
+                        val updatedAt: LocalDateTime) {
     constructor(resultRow: ResultRow): this(
-            resultRow[ProjectTable.id],
+            resultRow[ProjectTable.id].value,
             resultRow[ProjectTable.userId].value,
             resultRow[ProjectTable.name],
             resultRow[ProjectTable.description],
-            resultRow[ProjectTable.createdAt],
-            resultRow[ProjectTable.updatedAt]
+            resultRow[ProjectTable.createdAt].toJavaLocalDateTime(),
+            resultRow[ProjectTable.updatedAt].toJavaLocalDateTime()
     )
 }
 
@@ -51,16 +51,16 @@ data class TaskModel(val id: Int,
                      val description: String,
                      val dueDate: DateTime,
                      val isCompleted: Boolean,
-                     val createdAt: DateTime,
-                     val updatedAt: DateTime) {
+                     val createdAt: LocalDateTime,
+                     val updatedAt: LocalDateTime) {
     constructor(resultRow: ResultRow): this(
-            resultRow[TaskTable.id],
-            resultRow[TaskTable.projectId],
+            resultRow[TaskTable.id].value,
+            resultRow[TaskTable.projectId].value,
             resultRow[TaskTable.name],
             resultRow[TaskTable.description],
             resultRow[TaskTable.dueDate],
             resultRow[TaskTable.isCompleted],
-            resultRow[TaskTable.createdAt],
-            resultRow[TaskTable.updatedAt]
+            resultRow[TaskTable.createdAt].toJavaLocalDateTime(),
+            resultRow[TaskTable.updatedAt].toJavaLocalDateTime()
     )
 }

@@ -1,15 +1,14 @@
 package com.kissybnts.table
 
 import org.jetbrains.exposed.dao.IntIdTable
-import org.jetbrains.exposed.sql.Table
 import org.joda.time.DateTime
 
 object ColumnNames {
-    val id = "id"
-    val name = "name"
-    val description = "description"
-    val createdAt = "created_at"
-    val updatedAt = "updated_at"
+    const val id = "id"
+    const val name = "name"
+    const val description = "description"
+    const val createdAt = "created_at"
+    const val updatedAt = "updated_at"
 }
 
 enum class AuthProvider {
@@ -24,21 +23,20 @@ object UserTable : IntIdTable("users") {
     val providerId = integer("provider_id")
     val createdAt = datetime(ColumnNames.createdAt).default(DateTime())
     val updatedAt = datetime(ColumnNames.updatedAt).default(DateTime())
+    const val foreignKey = "user_id"
 }
 
-object ProjectTable : Table("projects") {
-    val id = integer("id").primaryKey().autoIncrement()
-    val userId = reference("user_id", UserTable)
+object ProjectTable : IntIdTable("projects") {
+    val userId = reference(UserTable.foreignKey, UserTable)
     val name = varchar(ColumnNames.name, 255)
     val description = text(ColumnNames.description)
     val createdAt = datetime(ColumnNames.createdAt).default(DateTime())
     val updatedAt = datetime(ColumnNames.updatedAt).default(DateTime())
-    val foreignKey = "project_id"
+    const val foreignKey = "project_id"
 }
 
-object TaskTable : Table("tasks") {
-    val id = integer(ColumnNames.id).primaryKey().autoIncrement()
-    val projectId = integer(ProjectTable.foreignKey).references(ProjectTable.id)
+object TaskTable : IntIdTable("tasks") {
+    val projectId = reference(ProjectTable.foreignKey, ProjectTable)
     val name = varchar(ColumnNames.name, 255)
     val description = text(ColumnNames.description)
     //    val isRepeat = bool("is_repeat").default(false)
@@ -47,7 +45,7 @@ object TaskTable : Table("tasks") {
     val isCompleted = bool("is_completed").default(false)
     val createdAt = datetime(ColumnNames.createdAt).default(DateTime())
     val updatedAt = datetime(ColumnNames.updatedAt).default(DateTime())
-    val foreignKey = "task_id"
+    const val foreignKey = "task_id"
 }
 
 //object TaskScheduleTable: Table("task_schedules") {
