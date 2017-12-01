@@ -1,7 +1,5 @@
 package com.kissybnts.app.route
 
-import com.kissybnts.extension.badRequest
-import com.kissybnts.extension.internalServerError
 import com.kissybnts.extension.ok
 import com.kissybnts.app.repository.TaskRepository
 import com.kissybnts.app.request.CreateTaskRequest
@@ -33,29 +31,16 @@ internal fun Route.tasks() {
 
     post<Tasks> {
         val request = call.receive<CreateTaskRequest>()
-        try {
-            val task = TaskRepository.insert(request)
-            call.respond(task)
-        } catch (ex: IllegalStateException) {
-            println(ex.message)
-            call.badRequest()
-        }
-//        } catch (ex: Exception) {
-//            println(ex.message)
-//            call.internalServerError()
-//        }
+
+        val task = TaskRepository.insert(request)
+        call.respond(task)
     }
 
     patch<Tasks.Id> {
         val request = call.receive<UpdateTaskRequest>()
-        try {
-            TaskRepository.update(it.taskId, request)
-            call.ok()
-        } catch (ex: IllegalStateException) {
-            call.badRequest()
-        } catch (ex: Exception) {
-            call.internalServerError()
-        }
+
+        TaskRepository.update(it.taskId, request)
+        call.ok()
     }
 
     patch<Tasks.Id.Complete> {

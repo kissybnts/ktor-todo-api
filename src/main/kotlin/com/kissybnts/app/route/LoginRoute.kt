@@ -74,13 +74,7 @@ fun Route.login(client: HttpClient) {
             val type = call.parameters["type"] ?: throw IllegalStateException("Type is null.")
             val code = call.parameters["code"] ?: throw IllegalStateException("code is null.")
 
-            val cushioningUser = try {
-                client.acquireUser(type, principal.accessToken, code)
-            } catch (ex: Exception) {
-                println(ex.message)
-                call.respond(HttpStatusCode.BadRequest)
-                return@handle
-            }
+            val cushioningUser = client.acquireUser(type, principal.accessToken, code)
 
             val user = UserRepository.selectByProvider(AuthProvider.GitHub, cushioningUser.providerId)?.let {
                 UserRepository.loginUpdate(it, code)

@@ -1,7 +1,5 @@
 package com.kissybnts.app.route
 
-import com.kissybnts.extension.badRequest
-import com.kissybnts.extension.internalServerError
 import com.kissybnts.extension.notFound
 import com.kissybnts.app.repository.ProjectRepository
 import com.kissybnts.app.repository.TaskRepository
@@ -34,15 +32,10 @@ internal fun Route.projects() {
 
     post<Projects> {
         val request = call.receive<CreateProjectRequest>()
-        try {
-            // TODO change to use the user id of which logged in user
-            val project = ProjectRepository.insert(request, 1)
-            call.respond(project)
-        } catch (ex: IllegalStateException) {
-            call.badRequest()
-        } catch (ex: Exception) {
-            call.internalServerError()
-        }
+
+        // TODO change to use the user id of which logged in user
+        val project = ProjectRepository.insert(request, 1)
+        call.respond(project)
     }
 
     get<Projects.Id> {
