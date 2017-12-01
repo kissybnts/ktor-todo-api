@@ -1,7 +1,6 @@
 package com.kissybnts
 
 import com.kissybnts.extension.jacksonSetUp
-import com.kissybnts.extension.ok
 import com.kissybnts.extension.setUp
 import com.kissybnts.app.route.Index
 import com.kissybnts.app.route.login
@@ -35,21 +34,6 @@ fun Application.main() {
     install(Routing) {
         get<Index> {
             call.respond(HttpStatusCode.OK, "Hello from Ktor!")
-        }
-        route("/intercept"){
-            intercept(ApplicationCallPipeline.Infrastructure) {
-                println("Infrastructure, Intercepted!")
-            }
-            intercept(ApplicationCallPipeline.Call) {
-                println("Call, Intercepted!")
-            }
-            intercept(ApplicationCallPipeline.Fallback) {
-                println("Fallback, Intercepted!")
-            }
-            get<Index> {
-                println("get!")
-                call.ok()
-            }
         }
 
         val client = HttpClient(ApacheBackend)
