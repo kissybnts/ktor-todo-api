@@ -3,7 +3,13 @@ package com.kissybnts
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.joda.JodaModule
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.kissybnts.app.EnvironmentVariableKeys
+import com.kissybnts.app.FormatConstants
 import com.kissybnts.extension.ok
 import com.kissybnts.route.Index
 import com.kissybnts.route.login
@@ -24,6 +30,9 @@ import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.route
 import org.jetbrains.exposed.sql.Database
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 fun Application.main() {
     val databaseConfig = environment.config.config("database")
@@ -38,6 +47,12 @@ fun Application.main() {
             propertyNamingStrategy = PropertyNamingStrategy.SNAKE_CASE
             // TODO remove this, and then add JavaTime module and define default serializer/deserializer
             registerModule(JodaModule())
+            registerModule(JavaTimeModule().apply {
+                addSerializer(LocalDateTime::class.java, LocalDateTimeSerializer(DateTimeFormatter.ofPattern(FormatConstants.DATE_TIME_FORMAT)))
+                addDeserializer(LocalDateTime::class.java, LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(FormatConstants.DATE_TIME_FORMAT)))
+                addSerializer(LocalDate::class.java, LocalDateSerializer(DateTimeFormatter.ofPattern(FormatConstants.DATE_FORMAT)))
+                addDeserializer(LocalDate::class.java, LocalDateDeserializer(DateTimeFormatter.ofPattern(FormatConstants.DATE_FORMAT)))
+            })
         }
     }
 

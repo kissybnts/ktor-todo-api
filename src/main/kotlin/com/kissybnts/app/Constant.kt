@@ -16,3 +16,8 @@ object EnvironmentVariableKeys {
     const val GITHUB_CLIENT_ID: String = "GITHUB_CLIENT_ID"
     const val GITHUB_CLIENT_SECRET: String = "GITHUB_CLIENT_SECRET"
 }
+
+object FormatConstants {
+    const val DATE_TIME_FORMAT = "yyyy/MM/dd HH:mm:ss"
+    const val DATE_FORMAT = "yyyy/MM/dd"
+}

@@ -52,6 +52,7 @@ dependencies {
     }
     compile "mysql:mysql-connector-java:$mysql_version"
     compile ('com.fasterxml.jackson.datatype:jackson-datatype-joda:2.9.2')
+    compile ('com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.2')
     compile "io.jsonwebtoken:jjwt:0.9.0"
     compile "ch.qos.logback:logback-classic:$logback_version"
     testCompile group: 'junit', name: 'junit', version: junit_version
