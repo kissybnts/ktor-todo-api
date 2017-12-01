@@ -10,7 +10,7 @@ import com.kissybnts.app.model.toCushioningUser
 import com.kissybnts.app.repository.CushioningUser
 import com.kissybnts.app.repository.UserRepository
 import com.kissybnts.app.response.LoginResponse
-import com.kissybnts.app.table.AuthProvider
+import com.kissybnts.app.enumeration.AuthProvider
 import com.kissybnts.exception.ProviderAuthenticationErrorException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -71,12 +71,13 @@ fun Route.login(client: HttpClient) {
         }
 
         handle {
+            val loginType = call.loginType()
+
             val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()?: throw IllegalStateException("Principal is null.")
 
-            val type = call.parameters["type"] ?: throw IllegalStateException("Login type is null.")
             val code = call.parameters["code"] ?: throw IllegalStateException("Code is null.")
 
-            val cushioningUser = client.acquireUser(type, principal.accessToken, code)
+            val cushioningUser = client.acquireUser(loginType, principal.accessToken, code)
 
             val user = UserRepository.selectByProvider(AuthProvider.GitHub, cushioningUser.providerId)?.let {
                 UserRepository.loginUpdate(it, code)
@@ -89,13 +90,17 @@ fun Route.login(client: HttpClient) {
     }
 }
 
-private suspend fun HttpClient.acquireUser(type: String, accessToken: String, code: String): CushioningUser {
+private suspend fun ApplicationCall.loginType(): AuthProvider {
+    val type = parameters["type"]?: throw IllegalStateException("Login type is not specified.")
+    return AuthProvider.fromName(type)
+}
+
+private suspend fun HttpClient.acquireUser(type: AuthProvider, accessToken: String, code: String): CushioningUser {
     return when (type) {
-        "github" -> {
+        AuthProvider.GitHub -> {
             val githubUser = acquireGitHubUser(accessToken)
             githubUser.toCushioningUser(code)
         }
-        else -> throw IllegalArgumentException("Un supported type: $type")
     }
 }
 

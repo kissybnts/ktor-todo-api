@@ -70,6 +70,10 @@ internal fun StatusPages.Configuration.setUp(log: Logger) {
         log.error(it)
         call.badRequest(ErrorResponse(it, DefaultMessages.Error.SOMETHING_WRONG))
     }
+    exception<IllegalArgumentException> {
+        log.error(it)
+        call.badRequest(ErrorResponse(it, DefaultMessages.Error.BAD_REQUEST))
+    }
     exception<ResourceNotFoundException> {
         log.error(it.message)
         call.notFound(ErrorResponse(it, DefaultMessages.Error.RESOURCE_NOT_FOUND))
