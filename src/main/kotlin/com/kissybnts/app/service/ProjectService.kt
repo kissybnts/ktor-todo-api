@@ -1,5 +1,6 @@
 package com.kissybnts.app.service
 
+import com.kissybnts.app.DefaultMessages
 import com.kissybnts.app.model.ProjectModel
 import com.kissybnts.app.model.TaskModel
 import com.kissybnts.app.repository.ProjectRepository
@@ -8,6 +9,10 @@ import com.kissybnts.app.request.CreateProjectRequest
 import com.kissybnts.exception.ResourceNotFoundException
 
 class ProjectService {
+    companion object {
+        fun resourceNotFoundException(projectId: Int) = ResourceNotFoundException(DefaultMessages.Error.resourceNotFound("Project", projectId))
+    }
+
     private val projectRepository: ProjectRepository = ProjectRepository
     private val taskRepository: TaskRepository = TaskRepository
 
@@ -15,8 +20,8 @@ class ProjectService {
         return projectRepository.selectAll(userId)
     }
 
-    fun select(id: Int, userId: Int): ProjectModel {
-        return projectRepository.select(id, userId) ?: throw ResourceNotFoundException("Project of which id is $id has not been found.")
+    fun select(projectId: Int, userId: Int): ProjectModel {
+        return projectRepository.select(projectId, userId) ?: throw resourceNotFoundException(projectId)
     }
 
     fun selectTasks(projectId: Int, userId: Int): List<TaskModel> {
@@ -27,4 +32,6 @@ class ProjectService {
     fun create(request: CreateProjectRequest, userId: Int): ProjectModel {
         return projectRepository.insert(request, userId)
     }
+
+    private fun resourceNotFoundException(projectId: Int) = ProjectService.resourceNotFoundException(projectId)
 }
