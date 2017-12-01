@@ -1,5 +1,7 @@
 package com.kissybnts.extension
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
@@ -9,6 +11,8 @@ import com.kissybnts.app.EnvironmentVariableKeys
 import com.kissybnts.app.FormatConstants
 import com.kissybnts.getEnv
 import io.ktor.config.ApplicationConfig
+import io.ktor.features.ContentNegotiation
+import io.ktor.jackson.jackson
 import org.jetbrains.exposed.sql.Database
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -29,7 +33,15 @@ internal fun Database.Companion.setUp(databaseConfig: ApplicationConfig) {
     }
 }
 
-internal fun JavaTimeModule.setUp(): JavaTimeModule {
+internal fun ContentNegotiation.Configuration.jacksonSetUp() {
+    jackson {
+        configure(SerializationFeature.INDENT_OUTPUT, true)
+        propertyNamingStrategy = PropertyNamingStrategy.SNAKE_CASE
+        registerModule(JavaTimeModule().setUp())
+    }
+}
+
+private fun JavaTimeModule.setUp(): JavaTimeModule {
     addSerializer(LocalDateTime::class.java, LocalDateTimeSerializer(DateTimeFormatter.ofPattern(FormatConstants.DATE_TIME_FORMAT)))
     addDeserializer(LocalDateTime::class.java, LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(FormatConstants.DATE_TIME_FORMAT)))
     addSerializer(LocalDate::class.java, LocalDateSerializer(DateTimeFormatter.ofPattern(FormatConstants.DATE_FORMAT)))
