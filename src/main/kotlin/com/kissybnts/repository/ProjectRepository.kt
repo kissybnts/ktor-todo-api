@@ -1,37 +1,31 @@
 package com.kissybnts.repository
 
+import com.kissybnts.extension.toJavaLocalDateTime
+import com.kissybnts.model.ProjectModel
 import com.kissybnts.request.CreateProjectRequest
 import com.kissybnts.table.ProjectTable
-import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-
-data class ProjectJSON(
-        val id: Int,
-        val name: String,
-        val description: String) {
-    constructor(result: ResultRow) : this(
-            result[ProjectTable.id],
-            result[ProjectTable.name],
-            result[ProjectTable.description])
-}
+import org.joda.time.DateTime
 
 object ProjectRepository {
-    fun selectAll(userId: Int): List<ProjectJSON> = transaction { ProjectTable.select { ProjectTable.userId.eq(userId) }.map { ProjectJSON(it) } }
+    fun selectAll(userId: Int): List<ProjectModel> = transaction { ProjectTable.select { ProjectTable.userId.eq(userId) }.map { ProjectModel(it) } }
 
-    fun select(id: Int): ProjectJSON? = transaction { ProjectTable.select { ProjectTable.id.eq(id) }.firstOrNull()?.let { ProjectJSON(it) } }
+    fun select(id: Int): ProjectModel? = transaction { ProjectTable.select { ProjectTable.id.eq(id) }.firstOrNull()?.let { ProjectModel(it) } }
 
-    fun insert(project: CreateProjectRequest): ProjectJSON {
+    fun insert(project: CreateProjectRequest, userId: Int): ProjectModel {
+        val now = DateTime()
         val statement = transaction {
             ProjectTable.insert {
-                // TODO change to use the user id of which logged in user
-                it[ProjectTable.userId] = 1
+                it[ProjectTable.userId] = userId
                 it[ProjectTable.name] = project.name
                 it[ProjectTable.description] = project.description
+                it[ProjectTable.createdAt] = now
+                it[ProjectTable.updatedAt] = now
             }
         }
         val id = statement.generatedKey?.toInt() ?: throw IllegalStateException("Generated id is null")
-        return ProjectJSON(id, project.name, project.description)
+        return ProjectModel(id, userId, project.name, project.description, now.toJavaLocalDateTime(), now.toJavaLocalDateTime())
     }
 }

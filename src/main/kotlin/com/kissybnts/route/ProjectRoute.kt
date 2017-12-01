@@ -35,7 +35,8 @@ internal fun Route.projects() {
     post<Projects> {
         val request = call.receive<CreateProjectRequest>()
         try {
-            val project = ProjectRepository.insert(request)
+            // TODO change to use the user id of which logged in user
+            val project = ProjectRepository.insert(request, 1)
             call.respond(project)
         } catch (ex: IllegalStateException) {
             call.badRequest()
