@@ -2,7 +2,6 @@ package com.kissybnts
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.kissybnts.extension.ok
 import com.kissybnts.extension.setUp
@@ -36,8 +35,6 @@ fun Application.main() {
         jackson {
             configure(SerializationFeature.INDENT_OUTPUT, true)
             propertyNamingStrategy = PropertyNamingStrategy.SNAKE_CASE
-            // TODO remove this, and then add JavaTime module and define default serializer/deserializer
-            registerModule(JodaModule())
             registerModule(JavaTimeModule().setUp())
         }
     }
