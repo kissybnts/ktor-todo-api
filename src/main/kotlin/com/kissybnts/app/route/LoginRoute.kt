@@ -2,6 +2,7 @@ package com.kissybnts.app.route
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.kissybnts.app.DefaultMessages
 import com.kissybnts.app.EnvironmentVariableKeys
 import com.kissybnts.app.model.GitHubUser
 import com.kissybnts.app.model.UserModel
@@ -10,6 +11,7 @@ import com.kissybnts.app.repository.CushioningUser
 import com.kissybnts.app.repository.UserRepository
 import com.kissybnts.app.response.LoginResponse
 import com.kissybnts.app.table.AuthProvider
+import com.kissybnts.exception.ProviderAuthenticationErrorException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.ktor.application.ApplicationCall
@@ -24,7 +26,6 @@ import io.ktor.client.request.header
 import io.ktor.client.utils.url
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
-import io.ktor.http.HttpStatusCode
 import io.ktor.locations.location
 import io.ktor.locations.locations
 import io.ktor.locations.oauthAtLocation
@@ -64,15 +65,16 @@ fun Route.login(client: HttpClient) {
 
         param("error") {
             handle {
-                call.respond(HttpStatusCode.BadRequest, call.parameters.getAll("error").orEmpty())
+                val type = call.parameters["type"]?: throw IllegalStateException("Login type is null.")
+                throw ProviderAuthenticationErrorException(call.parameters.getAll("error")?.joinToString(",", prefix = "Login with $type has been failed: ")?: DefaultMessages.Error.RESOURCE_NOT_FOUND)
             }
         }
 
         handle {
             val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()?: throw IllegalStateException("Principal is null.")
 
-            val type = call.parameters["type"] ?: throw IllegalStateException("Type is null.")
-            val code = call.parameters["code"] ?: throw IllegalStateException("code is null.")
+            val type = call.parameters["type"] ?: throw IllegalStateException("Login type is null.")
+            val code = call.parameters["code"] ?: throw IllegalStateException("Code is null.")
 
             val cushioningUser = client.acquireUser(type, principal.accessToken, code)
 

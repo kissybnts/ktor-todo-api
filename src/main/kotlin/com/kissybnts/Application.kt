@@ -12,6 +12,7 @@ import io.ktor.client.backend.apache.ApacheBackend
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
+import io.ktor.features.StatusPages
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Locations
 import io.ktor.locations.get
@@ -29,6 +30,9 @@ fun Application.main() {
     install(Locations)
     install(ContentNegotiation) {
         jacksonSetUp()
+    }
+    install(StatusPages) {
+        setUp(log)
     }
 
     install(Routing) {

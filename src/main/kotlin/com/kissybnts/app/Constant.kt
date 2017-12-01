@@ -21,3 +21,11 @@ object FormatConstants {
     const val DATE_TIME_FORMAT = "yyyy/MM/dd HH:mm:ss"
     const val DATE_FORMAT = "yyyy/MM/dd"
 }
+
+object DefaultMessages {
+    object Error {
+        const val SOMETHING_WRONG = "Something wrong."
+        const val RESOURCE_NOT_FOUND = "Specified resource has not been found."
+        const val AUTH_PROCESS_FAILED = "Authentication process has been failed."
+    }
+}

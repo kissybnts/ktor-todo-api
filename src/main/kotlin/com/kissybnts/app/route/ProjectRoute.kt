@@ -4,6 +4,7 @@ import com.kissybnts.extension.notFound
 import com.kissybnts.app.repository.ProjectRepository
 import com.kissybnts.app.repository.TaskRepository
 import com.kissybnts.app.request.CreateProjectRequest
+import com.kissybnts.exception.ResourceNotFoundException
 import io.ktor.application.call
 import io.ktor.locations.get
 import io.ktor.locations.location
@@ -44,7 +45,7 @@ internal fun Route.projects() {
         if (project != null) {
             call.respond(project)
         } else {
-            call.notFound()
+            throw ResourceNotFoundException("Project of which id is ${it.projectId} is not found.")
         }
     }
 

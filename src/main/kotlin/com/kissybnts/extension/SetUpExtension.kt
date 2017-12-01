@@ -7,16 +7,24 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
+import com.kissybnts.app.DefaultMessages
 import com.kissybnts.app.EnvironmentVariableKeys
 import com.kissybnts.app.FormatConstants
+import com.kissybnts.app.response.ErrorResponse
+import com.kissybnts.exception.ProviderAuthenticationErrorException
+import com.kissybnts.exception.ResourceNotFoundException
 import com.kissybnts.getEnv
+import io.ktor.application.call
 import io.ktor.config.ApplicationConfig
 import io.ktor.features.ContentNegotiation
+import io.ktor.features.StatusPages
 import io.ktor.jackson.jackson
 import org.jetbrains.exposed.sql.Database
+import org.slf4j.Logger
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import io.ktor.util.error
 
 /**
  * set up database config with `ApplicationConfig` and environment variables.
@@ -54,4 +62,24 @@ private fun JavaTimeModule.setUp(): JavaTimeModule {
     addSerializer(LocalDate::class.java, LocalDateSerializer(DateTimeFormatter.ofPattern(FormatConstants.DATE_FORMAT)))
     addDeserializer(LocalDate::class.java, LocalDateDeserializer(DateTimeFormatter.ofPattern(FormatConstants.DATE_FORMAT)))
     return this
+}
+
+internal fun StatusPages.Configuration.setUp(log: Logger) {
+
+    exception<IllegalStateException> {
+        log.error(it)
+        call.badRequest(ErrorResponse(it, DefaultMessages.Error.SOMETHING_WRONG))
+    }
+    exception<ResourceNotFoundException> {
+        log.error(it.message)
+        call.notFound(ErrorResponse(it, DefaultMessages.Error.RESOURCE_NOT_FOUND))
+    }
+    exception<ProviderAuthenticationErrorException> {
+        log.error(it.message)
+        call.badRequest(ErrorResponse(it,  DefaultMessages.Error.AUTH_PROCESS_FAILED))
+    }
+    exception<Exception> {
+        log.error(it)
+        call.internalServerError(ErrorResponse(it, DefaultMessages.Error.SOMETHING_WRONG))
+    }
 }
