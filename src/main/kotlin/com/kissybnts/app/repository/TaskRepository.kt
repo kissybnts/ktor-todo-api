@@ -55,36 +55,43 @@ object TaskRepository {
     /**
      * Update the specified task according to the request using transaction.
      */
-    fun update(id: Int, request: UpdateTaskRequest): Int = transaction { updateWithoutTransaction(id, request) }
+    fun update(id: Int, request: UpdateTaskRequest, userId: Int): Int = transaction { updateWithoutTransaction(id, request, userId) }
 
-    private fun updateWithoutTransaction(id: Int, request: UpdateTaskRequest): Int {
-        return TaskTable.update({ TaskTable.id.eq(id)}) {
-            it[name] = request.name
-            it[description] = request.description
-            it[dueDate] = request.dueDate.toJodaDate()
-            it[updatedAt] = DateTime()
+    private fun updateWithoutTransaction(id: Int, request: UpdateTaskRequest, userId: Int): Int {
+        return joinOnlyProjectId(userId).update({ TaskTable.id.eq(id) }) {
+            it[TaskTable.name] = request.name
+            it[TaskTable.description] = request.description
+            it[TaskTable.dueDate] = request.dueDate.toJodaDate()
+            it[TaskTable.updatedAt] = DateTime()
         }
     }
 
     // ---------------
     // Complete
     // ---------------
-    fun complete(id: Int): Int = transaction { completeWithoutTransaction(id) }
+    fun complete(id: Int, userId: Int): Int = transaction { completeWithoutTransaction(id, userId) }
 
-    private fun completeWithoutTransaction(id: Int): Int {
-        return TaskTable.update({ TaskTable.id.eq(id) }) {
-            it[isCompleted] = true
-            it[updatedAt] = DateTime()
+    private fun completeWithoutTransaction(id: Int, userId: Int): Int {
+        return joinOnlyProjectId(userId).update({ TaskTable.id.eq(id) }) {
+            it[TaskTable.isCompleted] = true
+            it[TaskTable.updatedAt] = DateTime()
         }
     }
 
-    fun complete(ids: List<Int>) = transaction { completeWithoutTransaction(ids) }
+    fun complete(ids: List<Int>, userId: Int) = transaction { completeWithoutTransaction(ids, userId) }
 
-    private fun completeWithoutTransaction(ids: List<Int>): Int {
+    private fun completeWithoutTransaction(ids: List<Int>, userId: Int): Int {
         val now = DateTime()
-        return TaskTable.update({ TaskTable.id.inList(ids) }) {
+        return joinOnlyProjectId(userId).update({ TaskTable.id.inList(ids) and ProjectTable.userId.eq(userId) }) {
             it[TaskTable.isCompleted] = true
             it[TaskTable.updatedAt] = now
         }
+    }
+
+    /**
+     * make `tasks INNER JOIN (SELECT projects.id FROM projects WHERE projects.user_id = ${user_id}) q0 ON (q0.id = tasks.project_id)`.
+     */
+    private fun joinOnlyProjectId(userId: Int): Join {
+        return TaskTable.joinQuery(on = { it[ProjectTable.id].eq(TaskTable.projectId) }, joinPart = { ProjectTable.slice(ProjectTable.id).select { ProjectTable.userId.eq(userId) } })
     }
 }

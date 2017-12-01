@@ -1,9 +1,9 @@
 package com.kissybnts.app.route
 
 import com.kissybnts.extension.ok
-import com.kissybnts.app.repository.TaskRepository
 import com.kissybnts.app.request.CreateTaskRequest
 import com.kissybnts.app.request.UpdateTaskRequest
+import com.kissybnts.app.service.TaskService
 import io.ktor.application.call
 import io.ktor.locations.get
 import io.ktor.locations.location
@@ -22,29 +22,33 @@ import io.ktor.routing.Route
 }
 
 internal fun Route.tasks() {
+    val taskService = TaskService()
 
     get<Tasks> {
         // TODO change to use the user id of which logged in user
-        val all = TaskRepository.selectAll(1)
+        val all = taskService.selectAll(1)
         call.respond(all)
     }
 
     post<Tasks> {
         val request = call.receive<CreateTaskRequest>()
 
-        val task = TaskRepository.insert(request)
+        // TODO change to use the user id of which logged in user
+        val task = taskService.create(request, 1)
         call.respond(task)
     }
 
     patch<Tasks.Id> {
         val request = call.receive<UpdateTaskRequest>()
 
-        TaskRepository.update(it.taskId, request)
+        // TODO change to use the user id of which logged in user
+        taskService.update(it.taskId, request, 1)
         call.ok()
     }
 
     patch<Tasks.Id.Complete> {
-        TaskRepository.complete(it.taskId)
+        // TODO change to use the user id of which logged in user
+        taskService.complete(it.taskId, 1)
         call.ok()
     }
 }
