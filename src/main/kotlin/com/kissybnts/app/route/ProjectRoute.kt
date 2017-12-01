@@ -1,10 +1,7 @@
 package com.kissybnts.app.route
 
-import com.kissybnts.extension.notFound
-import com.kissybnts.app.repository.ProjectRepository
-import com.kissybnts.app.repository.TaskRepository
 import com.kissybnts.app.request.CreateProjectRequest
-import com.kissybnts.exception.ResourceNotFoundException
+import com.kissybnts.app.service.ProjectService
 import io.ktor.application.call
 import io.ktor.locations.get
 import io.ktor.locations.location
@@ -24,10 +21,11 @@ import io.ktor.routing.Route
 }
 
 internal fun Route.projects() {
+    val projectService = ProjectService()
 
     get<Projects> {
         // TODO change to use the user id of which logged in user
-        val all = ProjectRepository.selectAll(1)
+        val all = projectService.selectAll(1)
         call.respond(all)
     }
 
@@ -35,23 +33,19 @@ internal fun Route.projects() {
         val request = call.receive<CreateProjectRequest>()
 
         // TODO change to use the user id of which logged in user
-        val project = ProjectRepository.insert(request, 1)
+        val project = projectService.create(request, 1)
         call.respond(project)
     }
 
     get<Projects.Id> {
         // TODO change to use the user id of which logged in user
-        val project = ProjectRepository.select(it.projectId, 1)
-        if (project != null) {
-            call.respond(project)
-        } else {
-            throw ResourceNotFoundException("Project of which id is ${it.projectId} is not found.")
-        }
+        val project = projectService.select(it.projectId, 1)
+        call.respond(project)
     }
 
     get<Projects.Id.Tasks> {
         // TODO change to use the user id of which logged in user
-        val tasks = TaskRepository.selectAllBelongProject(it.projectId(),1)
+        val tasks = projectService.selectTasks(it.projectId(), 1)
         call.respond(tasks)
     }
 }

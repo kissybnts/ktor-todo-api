@@ -8,10 +8,6 @@ import com.kissybnts.app.request.UpdateTaskRequest
 import com.kissybnts.exception.ResourceNotFoundException
 
 class TaskService {
-    init {
-        println("Task service has been created just now.")
-    }
-
     private val taskRepository: TaskRepository = TaskRepository
     private val projectRepository: ProjectRepository = ProjectRepository
 
@@ -47,5 +43,4 @@ class TaskService {
     private fun checkIsUsersProject(projectId: Int, userId: Int) {
         projectRepository.select(projectId, userId) ?: throw ResourceNotFoundException("Project of which id is $projectId has not been found.")
     }
-
 }

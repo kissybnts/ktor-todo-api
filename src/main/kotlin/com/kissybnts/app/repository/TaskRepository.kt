@@ -90,6 +90,8 @@ object TaskRepository {
 
     /**
      * make `tasks INNER JOIN (SELECT projects.id FROM projects WHERE projects.user_id = ${user_id}) q0 ON (q0.id = tasks.project_id)`.
+     *
+     * TODO investigate a solution for this.
      */
     private fun joinOnlyProjectId(userId: Int): Join {
         return TaskTable.joinQuery(on = { it[ProjectTable.id].eq(TaskTable.projectId) }, joinPart = { ProjectTable.slice(ProjectTable.id).select { ProjectTable.userId.eq(userId) } })
