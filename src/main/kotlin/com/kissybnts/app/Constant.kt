@@ -13,6 +13,9 @@ object EnvironmentVariableKeys {
         const val DB_PASS: String = "${GRADLE_ENV}DB_PASS"
     }
     const val JWT_SECRET_KEY: String = "JWT_SECRET_KEY"
+    const val JWT_EXPIRE_TIME: String = "JWT_EXPIRE_TIME"
+    const val JWT_REFRESH_SECRET_KEY: String = "JWT_REFRESH_SECRET_KEY"
+    const val JWT_REFRESH_EXPIRE_TIME: String = "JWT_REFRESH_EXPIRE_TIME"
     const val GITHUB_CLIENT_ID: String = "GITHUB_CLIENT_ID"
     const val GITHUB_CLIENT_SECRET: String = "GITHUB_CLIENT_SECRET"
 }
