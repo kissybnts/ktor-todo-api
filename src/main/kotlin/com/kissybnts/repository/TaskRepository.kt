@@ -7,10 +7,8 @@ import com.kissybnts.request.CreateTaskRequest
 import com.kissybnts.request.UpdateTaskRequest
 import com.kissybnts.table.ProjectTable
 import com.kissybnts.table.TaskTable
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 
 object TaskRepository {
@@ -24,9 +22,9 @@ object TaskRepository {
         }
     }
 
-    fun selectAllBelongProject(projectId: Int): List<TaskModel> {
+    fun selectAllBelongProject(projectId: Int, userId: Int): List<TaskModel> {
         return transaction {
-            TaskTable.select { TaskTable.projectId.eq(projectId) }.map { TaskModel(it) }
+            TaskTable.innerJoin(ProjectTable).select { TaskTable.projectId.eq(projectId) and ProjectTable.userId.eq(userId) }.map { TaskModel(it) }
         }
     }
 

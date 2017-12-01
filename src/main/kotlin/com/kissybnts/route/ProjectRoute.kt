@@ -46,7 +46,8 @@ internal fun Route.projects() {
     }
 
     get<Projects.Id> {
-        val project = ProjectRepository.select(it.projectId)
+        // TODO change to use the user id of which logged in user
+        val project = ProjectRepository.select(it.projectId, 1)
         if (project != null) {
             call.respond(project)
         } else {
@@ -55,7 +56,8 @@ internal fun Route.projects() {
     }
 
     get<Projects.Id.Tasks> {
-        val tasks = TaskRepository.selectAllBelongProject(it.projectId())
+        // TODO change to use the user id of which logged in user
+        val tasks = TaskRepository.selectAllBelongProject(it.projectId(),1)
         call.respond(tasks)
     }
 }
