@@ -1,9 +1,9 @@
-package com.kissybnts.repository
+package com.kissybnts.app.repository
 
 import com.kissybnts.extension.toJavaLocalDateTime
-import com.kissybnts.model.ProjectModel
-import com.kissybnts.request.CreateProjectRequest
-import com.kissybnts.table.ProjectTable
+import com.kissybnts.app.model.ProjectModel
+import com.kissybnts.app.request.CreateProjectRequest
+import com.kissybnts.app.table.ProjectTable
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select

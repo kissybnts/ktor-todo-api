@@ -1,15 +1,15 @@
-package com.kissybnts.route
+package com.kissybnts.app.route
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.kissybnts.app.EnvironmentVariableKeys
-import com.kissybnts.model.GitHubUser
-import com.kissybnts.model.UserModel
-import com.kissybnts.model.toCushioningUser
-import com.kissybnts.repository.CushioningUser
-import com.kissybnts.repository.UserRepository
-import com.kissybnts.response.LoginResponse
-import com.kissybnts.table.AuthProvider
+import com.kissybnts.app.model.GitHubUser
+import com.kissybnts.app.model.UserModel
+import com.kissybnts.app.model.toCushioningUser
+import com.kissybnts.app.repository.CushioningUser
+import com.kissybnts.app.repository.UserRepository
+import com.kissybnts.app.response.LoginResponse
+import com.kissybnts.app.table.AuthProvider
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.ktor.application.ApplicationCall

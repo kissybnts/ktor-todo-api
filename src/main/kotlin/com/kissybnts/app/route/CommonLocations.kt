@@ -1,4 +1,4 @@
-package com.kissybnts.route
+package com.kissybnts.app.route
 
 import io.ktor.locations.location
 

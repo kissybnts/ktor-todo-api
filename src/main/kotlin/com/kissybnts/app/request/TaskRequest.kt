@@ -1,4 +1,4 @@
-package com.kissybnts.request
+package com.kissybnts.app.request
 
 import java.time.LocalDate
 

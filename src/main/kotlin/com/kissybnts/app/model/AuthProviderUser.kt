@@ -1,8 +1,8 @@
-package com.kissybnts.model
+package com.kissybnts.app.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.kissybnts.repository.CushioningUser
-import com.kissybnts.table.AuthProvider
+import com.kissybnts.app.repository.CushioningUser
+import com.kissybnts.app.table.AuthProvider
 
 sealed class AuthProviderUser
 

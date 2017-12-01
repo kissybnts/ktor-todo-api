@@ -1,4 +1,4 @@
-package com.kissybnts.table
+package com.kissybnts.app.table
 
 import org.jetbrains.exposed.sql.Table
 import org.joda.time.DateTime

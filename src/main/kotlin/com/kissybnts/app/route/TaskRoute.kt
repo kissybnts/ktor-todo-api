@@ -1,11 +1,11 @@
-package com.kissybnts.route
+package com.kissybnts.app.route
 
 import com.kissybnts.extension.badRequest
 import com.kissybnts.extension.internalServerError
 import com.kissybnts.extension.ok
-import com.kissybnts.repository.TaskRepository
-import com.kissybnts.request.CreateTaskRequest
-import com.kissybnts.request.UpdateTaskRequest
+import com.kissybnts.app.repository.TaskRepository
+import com.kissybnts.app.request.CreateTaskRequest
+import com.kissybnts.app.request.UpdateTaskRequest
 import io.ktor.application.call
 import io.ktor.locations.get
 import io.ktor.locations.location

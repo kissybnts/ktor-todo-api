@@ -1,12 +1,12 @@
-package com.kissybnts.model
+package com.kissybnts.app.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.kissybnts.extension.toJavaLocalDate
 import com.kissybnts.extension.toJavaLocalDateTime
-import com.kissybnts.table.AuthProvider
-import com.kissybnts.table.ProjectTable
-import com.kissybnts.table.TaskTable
-import com.kissybnts.table.UserTable
+import com.kissybnts.app.table.AuthProvider
+import com.kissybnts.app.table.ProjectTable
+import com.kissybnts.app.table.TaskTable
+import com.kissybnts.app.table.UserTable
 import org.jetbrains.exposed.sql.ResultRow
 import java.time.LocalDate
 import java.time.LocalDateTime

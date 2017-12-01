@@ -1,12 +1,12 @@
-package com.kissybnts.repository
+package com.kissybnts.app.repository
 
 import com.kissybnts.extension.toJavaLocalDateTime
 import com.kissybnts.extension.toJodaDate
-import com.kissybnts.model.TaskModel
-import com.kissybnts.request.CreateTaskRequest
-import com.kissybnts.request.UpdateTaskRequest
-import com.kissybnts.table.ProjectTable
-import com.kissybnts.table.TaskTable
+import com.kissybnts.app.model.TaskModel
+import com.kissybnts.app.request.CreateTaskRequest
+import com.kissybnts.app.request.UpdateTaskRequest
+import com.kissybnts.app.table.ProjectTable
+import com.kissybnts.app.table.TaskTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -58,7 +58,7 @@ object TaskRepository {
     fun update(id: Int, request: UpdateTaskRequest): Int = transaction { updateWithoutTransaction(id, request) }
 
     private fun updateWithoutTransaction(id: Int, request: UpdateTaskRequest): Int {
-        return TaskTable.update({TaskTable.id.eq(id)}) {
+        return TaskTable.update({ TaskTable.id.eq(id)}) {
             it[name] = request.name
             it[description] = request.description
             it[dueDate] = request.dueDate.toJodaDate()

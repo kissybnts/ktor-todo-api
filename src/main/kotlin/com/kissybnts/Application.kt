@@ -3,10 +3,10 @@ package com.kissybnts
 import com.kissybnts.extension.jacksonSetUp
 import com.kissybnts.extension.ok
 import com.kissybnts.extension.setUp
-import com.kissybnts.route.Index
-import com.kissybnts.route.login
-import com.kissybnts.route.projects
-import com.kissybnts.route.tasks
+import com.kissybnts.app.route.Index
+import com.kissybnts.app.route.login
+import com.kissybnts.app.route.projects
+import com.kissybnts.app.route.tasks
 import io.ktor.application.*
 import io.ktor.client.HttpClient
 import io.ktor.client.backend.apache.ApacheBackend
