@@ -8,13 +8,11 @@ import com.kissybnts.app.request.CreateTaskRequest
 import com.kissybnts.app.request.UpdateTaskRequest
 import com.kissybnts.exception.ResourceNotFoundException
 
-class TaskService {
+class TaskService(private val taskRepository: TaskRepository = TaskRepository,
+                  private val projectRepository: ProjectRepository = ProjectRepository) {
     companion object {
         fun resourceNotFoundException(projectId: Int) = ResourceNotFoundException(DefaultMessages.Error.resourceNotFound("Task", projectId))
     }
-
-    private val taskRepository: TaskRepository = TaskRepository
-    private val projectRepository: ProjectRepository = ProjectRepository
 
     fun selectAll(userId: Int): List<TaskModel> {
         return taskRepository.selectAll(userId)
