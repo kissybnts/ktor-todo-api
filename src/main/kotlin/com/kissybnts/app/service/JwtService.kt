@@ -3,18 +3,23 @@ package com.kissybnts.app.service
 import com.kissybnts.app.EnvironmentVariableKeys
 import com.kissybnts.app.model.UserModel
 import com.kissybnts.app.pipeline.objectMapper
-import com.kissybnts.exception.BadCredentialException
+import com.kissybnts.exception.InvalidCredentialException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import io.ktor.auth.Principal
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 
 class JwtService {
+    init {
+        println("JwtService has been initialized.")
+    }
+
     fun generateToken(user: UserModel, type: TokenType): String {
         val expiration = LocalDateTime.now().plusHours(type.hour()).atZone(ZoneId.systemDefault())
         return Jwts.builder()
-                .setSubject(objectMapper.writeValueAsString(JWTUserSubject(user)))
+                .setSubject(objectMapper.writeValueAsString(JwtUserSubject(user)))
                 .setAudience("Ktor-todo")
                 .signWith(SignatureAlgorithm.HS512, type.secretKey())
                 .setExpiration(Date.from(expiration.toInstant()))
@@ -22,25 +27,26 @@ class JwtService {
                 .compact()
     }
 
-    fun verifyToken(token: String, type: TokenType): JWTUserSubject {
+    fun verifyToken(token: String, type: TokenType): JwtUserSubject {
         val jws = try {
             Jwts.parser().setSigningKey(type.secretKey()).parseClaimsJws(token)
         } catch (ex: Exception) {
-            throw BadCredentialException(ex.message?: "Invalid credential.")
+            // TODO 期限切れここに入るかも？
+            throw InvalidCredentialException(ex.message?: "Invalid credential.")
         }
 
         val now = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
 
         if (jws.body.expiration.before(now)) {
-            throw BadCredentialException("Token has already been expired.")
+            throw InvalidCredentialException("Token has already been expired.")
         }
 
-        val subject = jws.body.subject ?: throw BadCredentialException("Invalid token.")
+        val subject = jws.body.subject ?: throw InvalidCredentialException()
 
         return try {
-            objectMapper.readValue(subject, JWTUserSubject::class.java)
+            objectMapper.readValue(subject, JwtUserSubject::class.java)
         } catch (ex: Exception) {
-            throw BadCredentialException("Invalid token.")
+            throw InvalidCredentialException()
         }
     }
 }
@@ -53,6 +59,6 @@ enum class TokenType(private val key: String, private val expirationKey: String)
     fun hour(): Long = System.getenv(this.expirationKey).toLong()
 }
 
-data class JWTUserSubject(val id: Int, val providerId: Int) {
+data class JwtUserSubject(val id: Int, val providerId: Int): Principal {
     constructor(user: UserModel): this(user.id, user.providerId)
 }
