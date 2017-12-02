@@ -6,6 +6,7 @@ import com.kissybnts.app.JwtConstants
 import com.kissybnts.app.model.UserModel
 import com.kissybnts.app.pipeline.objectMapper
 import com.kissybnts.exception.InvalidCredentialException
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.ktor.auth.Principal
@@ -29,15 +30,10 @@ class JwtService {
     fun verifyToken(token: String, type: TokenType): JwtUserSubject {
         val jws = try {
             Jwts.parser().setSigningKey(type.secretKey()).parseClaimsJws(token)
+        } catch (ex: ExpiredJwtException) {
+            throw ex
         } catch (ex: Exception) {
-            // TODO 期限切れここに入るかも？
             throw InvalidCredentialException(ex.message?: DefaultMessages.Error.INVALID_CREDENTIAL)
-        }
-
-        val now = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
-
-        if (jws.body.expiration.before(now)) {
-            throw InvalidCredentialException("Token has already been expired.")
         }
 
         if (jws.body.audience != JwtConstants.Body.AUDIENCE) {

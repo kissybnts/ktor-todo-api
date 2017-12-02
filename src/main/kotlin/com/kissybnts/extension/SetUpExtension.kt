@@ -15,6 +15,7 @@ import com.kissybnts.exception.InvalidCredentialException
 import com.kissybnts.exception.ProviderAuthenticationErrorException
 import com.kissybnts.exception.ResourceNotFoundException
 import com.kissybnts.getEnv
+import io.jsonwebtoken.ExpiredJwtException
 import io.ktor.application.call
 import io.ktor.config.ApplicationConfig
 import io.ktor.features.ContentNegotiation
@@ -88,6 +89,10 @@ internal fun StatusPages.Configuration.setUp(log: Logger) {
     exception<InvalidCredentialException> {
         log.error(it)
         call.unauthorized(ErrorResponse(it, DefaultMessages.Error.INVALID_CREDENTIAL))
+    }
+    exception<ExpiredJwtException> {
+        log.error(it)
+        call.unauthorized(ErrorResponse(it, "Token has already been expired."))
     }
     exception<Exception> {
         log.error(it)
