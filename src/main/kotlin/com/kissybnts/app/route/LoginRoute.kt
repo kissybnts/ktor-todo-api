@@ -1,7 +1,7 @@
 package com.kissybnts.app.route
 
+import com.kissybnts.app.AuthConstants.loginProvider
 import com.kissybnts.app.DefaultMessages
-import com.kissybnts.app.EnvironmentVariableKeys
 import com.kissybnts.app.enumeration.AuthProvider
 import com.kissybnts.app.response.LoginResponse
 import com.kissybnts.app.service.JwtService
@@ -11,7 +11,6 @@ import com.kissybnts.exception.ProviderAuthenticationErrorException
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.auth.OAuthAccessTokenResponse
-import io.ktor.auth.OAuthServerSettings
 import io.ktor.auth.authentication
 import io.ktor.client.HttpClient
 import io.ktor.locations.location
@@ -27,20 +26,8 @@ import java.util.concurrent.Executors
 
 @location("/auth/login/{type}") data class Login(val type: String, val code: String? = null, val state: String? = null)
 
-private val exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4)
-
-private val loginProvider = listOf(
-        OAuthServerSettings.OAuth2ServerSettings(
-                name = "github",
-                authorizeUrl = "https://github.com/login/oauth/authorize",
-                accessTokenUrl = "https://github.com/login/oauth/access_token",
-                clientId = System.getenv(EnvironmentVariableKeys.GITHUB_CLIENT_ID),
-                defaultScopes = listOf("read:user"),
-                clientSecret = System.getenv(EnvironmentVariableKeys.GITHUB_CLIENT_SECRET)
-        )
-).associateBy { it.name }
-
 fun Route.login(client: HttpClient, jwtService: JwtService = JwtService(), userService: UserService = UserService()) {
+    val exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4)
 
     location<Login> {
         authentication {
@@ -56,9 +43,7 @@ fun Route.login(client: HttpClient, jwtService: JwtService = JwtService(), userS
 
         handle {
             val loginType = call.loginType()
-
             val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()?: throw IllegalStateException("Principal is null.")
-
             val code = call.parameters["code"] ?: throw IllegalStateException("Code is null.")
 
             val user = userService.loginWithProvider(loginType, principal.accessToken, code)

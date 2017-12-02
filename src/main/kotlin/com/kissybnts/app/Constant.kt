@@ -1,5 +1,7 @@
 package com.kissybnts.app
 
+import io.ktor.auth.OAuthServerSettings
+
 object EnvironmentVariableKeys {
     /**
      * All key has the prefix `ORG_GRADLE_PROJECT_`
@@ -47,4 +49,17 @@ object JwtConstants {
     }
 
     const val AUTH_HEADER_SCHEMA = "Bearer"
+}
+
+object AuthConstants {
+    val loginProvider: Map<String, OAuthServerSettings.OAuth2ServerSettings> = listOf(
+            OAuthServerSettings.OAuth2ServerSettings(
+                    name = "github",
+                    authorizeUrl = "https://github.com/login/oauth/authorize",
+                    accessTokenUrl = "https://github.com/login/oauth/access_token",
+                    clientId = System.getenv(EnvironmentVariableKeys.GITHUB_CLIENT_ID),
+                    defaultScopes = listOf("read:user"),
+                    clientSecret = System.getenv(EnvironmentVariableKeys.GITHUB_CLIENT_SECRET)
+            )
+    ).associateBy { it.name }
 }
