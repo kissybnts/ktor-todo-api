@@ -4,6 +4,7 @@ import com.kissybnts.extension.ok
 import com.kissybnts.app.request.CreateTaskRequest
 import com.kissybnts.app.request.UpdateTaskRequest
 import com.kissybnts.app.service.TaskService
+import com.kissybnts.extension.jwtUserSubject
 import io.ktor.application.call
 import io.ktor.locations.get
 import io.ktor.locations.location
@@ -23,30 +24,32 @@ import io.ktor.routing.Route
 
 internal fun Route.tasks(taskService: TaskService = TaskService()) {
     get<Tasks> {
-        // TODO change to use the user id of which logged in user
-        val all = taskService.selectAll(1)
+        val principal = call.jwtUserSubject()
+
+        val all = taskService.selectAll(principal.id)
         call.respond(all)
     }
 
     post<Tasks> {
+        val principal = call.jwtUserSubject()
         val request = call.receive<CreateTaskRequest>()
 
-        // TODO change to use the user id of which logged in user
-        val task = taskService.create(request, 1)
+        val task = taskService.create(request, principal.id)
         call.respond(task)
     }
 
     patch<Tasks.Id> {
+        val principal = call.jwtUserSubject()
         val request = call.receive<UpdateTaskRequest>()
 
-        // TODO change to use the user id of which logged in user
-        taskService.update(it.taskId, request, 1)
+        taskService.update(it.taskId, request, principal.id)
         call.ok()
     }
 
     patch<Tasks.Id.Complete> {
-        // TODO change to use the user id of which logged in user
-        taskService.complete(it.taskId, 1)
+        val principal = call.jwtUserSubject()
+
+        taskService.complete(it.taskId, principal.id)
         call.ok()
     }
 }
