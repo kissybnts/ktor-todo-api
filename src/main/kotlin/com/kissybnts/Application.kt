@@ -1,5 +1,6 @@
 package com.kissybnts
 
+import com.kissybnts.app.pipeline.jwtAuthentication
 import com.kissybnts.extension.jacksonSetUp
 import com.kissybnts.extension.setUp
 import com.kissybnts.app.route.Index
@@ -7,6 +8,7 @@ import com.kissybnts.app.route.login
 import com.kissybnts.app.route.projects
 import com.kissybnts.app.route.tasks
 import io.ktor.application.*
+import io.ktor.auth.authentication
 import io.ktor.client.HttpClient
 import io.ktor.client.backend.apache.ApacheBackend
 import io.ktor.features.CallLogging
@@ -48,6 +50,9 @@ fun Application.main() {
         login(client)
 
         route("/v1") {
+            authentication {
+                jwtAuthentication()
+            }
             projects()
             tasks()
         }

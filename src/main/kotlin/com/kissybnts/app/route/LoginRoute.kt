@@ -4,16 +4,15 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.kissybnts.app.DefaultMessages
 import com.kissybnts.app.EnvironmentVariableKeys
+import com.kissybnts.app.enumeration.AuthProvider
 import com.kissybnts.app.model.GitHubUser
-import com.kissybnts.app.model.UserModel
 import com.kissybnts.app.model.toCushioningUser
 import com.kissybnts.app.repository.CushioningUser
 import com.kissybnts.app.repository.UserRepository
 import com.kissybnts.app.response.LoginResponse
-import com.kissybnts.app.enumeration.AuthProvider
+import com.kissybnts.app.service.JwtService
+import com.kissybnts.app.service.TokenType
 import com.kissybnts.exception.ProviderAuthenticationErrorException
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.auth.OAuthAccessTokenResponse
@@ -35,12 +34,9 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.param
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.util.*
 import java.util.concurrent.Executors
 
-@location("/v1/auth/login/{type}") data class Login(val type: String, val code: String? = null, val state: String? = null)
+@location("/auth/login/{type}") data class Login(val type: String, val code: String? = null, val state: String? = null)
 
 private val exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4)
 
@@ -58,6 +54,8 @@ private val loginProvider = listOf(
 ).associateBy { it.name }
 
 fun Route.login(client: HttpClient) {
+    val jwtService = JwtService()
+
     location<Login> {
         authentication {
             oauthAtLocation<Login>(client, exec.asCoroutineDispatcher(), providerLookup = { loginProvider[it.type] }, urlProvider = { _, p -> redirectUrl(Login(p.name), false) })
@@ -83,9 +81,10 @@ fun Route.login(client: HttpClient) {
                 UserRepository.loginUpdate(it, code)
             } ?: UserRepository.insert(cushioningUser)
 
-            val token = generateToken(user)
+            val token = jwtService.generateToken(user, TokenType.ACCESS_TOKEN)
+            val refresh = jwtService.generateToken(user, TokenType.REFRESH_TOKEN)
 
-            call.respond(LoginResponse(user, token))
+            call.respond(LoginResponse(user, token, refresh))
         }
     }
 }
@@ -111,17 +110,6 @@ private suspend fun HttpClient.acquireGitHubUser(accessToken: String): GitHubUse
         method = HttpMethod.Get
     }
     return jacksonObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE).readValue(response.bodyStream.reader(Charsets.UTF_8), GitHubUser::class.java)
-}
-
-private fun generateToken(user: UserModel): String {
-    val expiration = LocalDateTime.now().plusHours(1).atZone(ZoneId.systemDefault())
-    return Jwts.builder()
-            .setSubject(user.id.toString())
-            .setAudience("Ktor-todo")
-            .signWith(SignatureAlgorithm.HS512, secretkey)
-            .setExpiration(Date.from(expiration.toInstant()))
-            .setHeaderParam("typ", "JWT")
-            .compact()
 }
 
 private fun <T: Any> ApplicationCall.redirectUrl(t: T, secure: Boolean = true): String {
