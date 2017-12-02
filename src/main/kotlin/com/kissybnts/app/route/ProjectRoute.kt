@@ -2,6 +2,7 @@ package com.kissybnts.app.route
 
 import com.kissybnts.app.request.CreateProjectRequest
 import com.kissybnts.app.service.ProjectService
+import com.kissybnts.extension.jwtUserSubject
 import io.ktor.application.call
 import io.ktor.locations.get
 import io.ktor.locations.location
@@ -22,28 +23,31 @@ import io.ktor.routing.Route
 
 internal fun Route.projects(projectService: ProjectService = ProjectService()) {
     get<Projects> {
-        // TODO change to use the user id of which logged in user
-        val all = projectService.selectAll(1)
+        val principal = call.jwtUserSubject()
+
+        val all = projectService.selectAll(principal.id)
         call.respond(all)
     }
 
     post<Projects> {
+        val principal = call.jwtUserSubject()
         val request = call.receive<CreateProjectRequest>()
 
-        // TODO change to use the user id of which logged in user
-        val project = projectService.create(request, 1)
+        val project = projectService.create(request, principal.id)
         call.respond(project)
     }
 
     get<Projects.Id> {
-        // TODO change to use the user id of which logged in user
-        val project = projectService.select(it.projectId, 1)
+        val principal = call.jwtUserSubject()
+
+        val project = projectService.select(it.projectId, principal.id)
         call.respond(project)
     }
 
     get<Projects.Id.Tasks> {
-        // TODO change to use the user id of which logged in user
-        val tasks = projectService.selectTasks(it.projectId(), 1)
+        val principal = call.jwtUserSubject()
+
+        val tasks = projectService.selectTasks(it.projectId(), principal.id)
         call.respond(tasks)
     }
 }
