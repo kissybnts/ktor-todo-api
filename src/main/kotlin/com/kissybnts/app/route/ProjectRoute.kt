@@ -20,9 +20,7 @@ import io.ktor.routing.Route
     }
 }
 
-internal fun Route.projects() {
-    val projectService = ProjectService()
-
+internal fun Route.projects(projectService: ProjectService = ProjectService()) {
     get<Projects> {
         // TODO change to use the user id of which logged in user
         val all = projectService.selectAll(1)

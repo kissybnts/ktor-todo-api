@@ -21,9 +21,7 @@ import io.ktor.routing.Route
     }
 }
 
-internal fun Route.tasks() {
-    val taskService = TaskService()
-
+internal fun Route.tasks(taskService: TaskService = TaskService()) {
     get<Tasks> {
         // TODO change to use the user id of which logged in user
         val all = taskService.selectAll(1)

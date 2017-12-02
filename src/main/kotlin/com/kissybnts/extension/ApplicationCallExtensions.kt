@@ -13,6 +13,10 @@ suspend fun ApplicationCall.notFound(errorResponse: ErrorResponse) {
     respond(HttpStatusCode.NotFound, errorResponse)
 }
 
+suspend fun ApplicationCall.unauthorized(errorResponse: ErrorResponse) {
+    respond(HttpStatusCode.Unauthorized, errorResponse)
+}
+
 suspend fun ApplicationCall.badRequest(errorResponse: ErrorResponse) {
     respond(HttpStatusCode.BadRequest, errorResponse)
 }

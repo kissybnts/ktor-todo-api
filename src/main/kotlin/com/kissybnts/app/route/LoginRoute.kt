@@ -40,8 +40,6 @@ import java.util.concurrent.Executors
 
 private val exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4)
 
-private val secretkey = System.getenv(EnvironmentVariableKeys.JWT_SECRET_KEY)
-
 private val loginProvider = listOf(
         OAuthServerSettings.OAuth2ServerSettings(
                 name = "github",
@@ -53,8 +51,7 @@ private val loginProvider = listOf(
         )
 ).associateBy { it.name }
 
-fun Route.login(client: HttpClient) {
-    val jwtService = JwtService()
+fun Route.login(client: HttpClient, jwtService: JwtService = JwtService()) {
 
     location<Login> {
         authentication {

@@ -7,6 +7,7 @@ import com.kissybnts.app.route.Index
 import com.kissybnts.app.route.login
 import com.kissybnts.app.route.projects
 import com.kissybnts.app.route.tasks
+import com.kissybnts.app.service.JwtService
 import io.ktor.application.*
 import io.ktor.auth.authentication
 import io.ktor.client.HttpClient
@@ -38,6 +39,8 @@ fun Application.main() {
     }
 
     install(Routing) {
+        val jwtService = JwtService()
+
         get<Index> {
             call.respond(HttpStatusCode.OK, "Hello from Ktor!")
         }
@@ -47,11 +50,11 @@ fun Application.main() {
             client.close()
         }
 
-        login(client)
+        login(client, jwtService)
 
         route("/v1") {
             authentication {
-                jwtAuthentication()
+                jwtAuthentication(jwtService)
             }
             projects()
             tasks()

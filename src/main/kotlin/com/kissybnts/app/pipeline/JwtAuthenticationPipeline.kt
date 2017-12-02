@@ -11,8 +11,7 @@ import io.ktor.auth.AuthenticationPipeline
 import io.ktor.auth.HttpAuthHeader
 import io.ktor.auth.parseAuthorizationHeader
 
-fun AuthenticationPipeline.jwtAuthentication() {
-    val jwtService = JwtService()
+fun AuthenticationPipeline.jwtAuthentication(jwtService: JwtService = JwtService()) {
     intercept(AuthenticationPipeline.RequestAuthentication) { context ->
         val authHeader = call.request.parseAuthorizationHeader()?: throw InvalidCredentialException()
         val user = if (authHeader.authScheme == "Bearer" && authHeader is HttpAuthHeader.Single) {
