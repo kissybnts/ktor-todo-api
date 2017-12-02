@@ -20,7 +20,7 @@ plugins {
     id "org.flywaydb.flyway" version "4.2.0"
 }
 
-group 'com.kissybnts'
+group 'kissybnts'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
