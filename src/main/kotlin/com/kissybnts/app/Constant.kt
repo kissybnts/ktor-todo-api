@@ -35,3 +35,16 @@ object DefaultMessages {
         fun resourceNotFound(name: String, id: Int) = "$name of which id is $id has not been found."
     }
 }
+
+object JwtConstants {
+    object Header {
+        const val TYPE_KEY = "typ"
+        const val TYPE = "JWT"
+    }
+
+    object Body {
+        const val AUDIENCE = "Ktor-todo"
+    }
+
+    const val AUTH_HEADER_SCHEMA = "Bearer"
+}

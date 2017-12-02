@@ -1,6 +1,8 @@
 package com.kissybnts.app.service
 
+import com.kissybnts.app.DefaultMessages
 import com.kissybnts.app.EnvironmentVariableKeys
+import com.kissybnts.app.JwtConstants
 import com.kissybnts.app.model.UserModel
 import com.kissybnts.app.pipeline.objectMapper
 import com.kissybnts.exception.InvalidCredentialException
@@ -12,18 +14,15 @@ import java.time.ZoneId
 import java.util.*
 
 class JwtService {
-    init {
-        println("JwtService has been initialized.")
-    }
 
     fun generateToken(user: UserModel, type: TokenType): String {
         val expiration = LocalDateTime.now().plusHours(type.hour()).atZone(ZoneId.systemDefault())
         return Jwts.builder()
                 .setSubject(objectMapper.writeValueAsString(JwtUserSubject(user)))
-                .setAudience("Ktor-todo")
+                .setAudience(JwtConstants.Body.AUDIENCE)
                 .signWith(SignatureAlgorithm.HS512, type.secretKey())
                 .setExpiration(Date.from(expiration.toInstant()))
-                .setHeaderParam("typ", "JWT")
+                .setHeaderParam(JwtConstants.Header.TYPE_KEY, JwtConstants.Header.TYPE)
                 .compact()
     }
 
@@ -32,7 +31,7 @@ class JwtService {
             Jwts.parser().setSigningKey(type.secretKey()).parseClaimsJws(token)
         } catch (ex: Exception) {
             // TODO 期限切れここに入るかも？
-            throw InvalidCredentialException(ex.message?: "Invalid credential.")
+            throw InvalidCredentialException(ex.message?: DefaultMessages.Error.INVALID_CREDENTIAL)
         }
 
         val now = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())
@@ -41,7 +40,7 @@ class JwtService {
             throw InvalidCredentialException("Token has already been expired.")
         }
 
-        if (jws.body.audience != "Ktor-todo") {
+        if (jws.body.audience != JwtConstants.Body.AUDIENCE) {
             throw InvalidCredentialException()
         }
 
