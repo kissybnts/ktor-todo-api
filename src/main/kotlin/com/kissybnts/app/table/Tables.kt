@@ -1,5 +1,6 @@
 package com.kissybnts.app.table
 
+import com.kissybnts.app.enumeration.AuthProvider
 import org.jetbrains.exposed.sql.Table
 import org.joda.time.DateTime
 
@@ -9,10 +10,6 @@ object ColumnNames {
     const val description = "description"
     const val createdAt = "created_at"
     const val updatedAt = "updated_at"
-}
-
-enum class AuthProvider {
-    GitHub
 }
 
 object UserTable : Table("users") {

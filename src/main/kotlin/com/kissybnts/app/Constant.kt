@@ -13,6 +13,9 @@ object EnvironmentVariableKeys {
         const val DB_PASS: String = "${GRADLE_ENV}DB_PASS"
     }
     const val JWT_SECRET_KEY: String = "JWT_SECRET_KEY"
+    const val JWT_EXPIRE_TIME: String = "JWT_EXPIRE_TIME"
+    const val JWT_REFRESH_SECRET_KEY: String = "JWT_REFRESH_SECRET_KEY"
+    const val JWT_REFRESH_EXPIRE_TIME: String = "JWT_REFRESH_EXPIRE_TIME"
     const val GITHUB_CLIENT_ID: String = "GITHUB_CLIENT_ID"
     const val GITHUB_CLIENT_SECRET: String = "GITHUB_CLIENT_SECRET"
 }
@@ -24,8 +27,24 @@ object FormatConstants {
 
 object DefaultMessages {
     object Error {
+        const val BAD_REQUEST = "Bad request."
         const val SOMETHING_WRONG = "Something wrong."
         const val RESOURCE_NOT_FOUND = "Specified resource has not been found."
         const val AUTH_PROCESS_FAILED = "Authentication process has been failed."
+        const val INVALID_CREDENTIAL = "Invalid credential."
+        fun resourceNotFound(name: String, id: Int) = "$name of which id is $id has not been found."
     }
+}
+
+object JwtConstants {
+    object Header {
+        const val TYPE_KEY = "typ"
+        const val TYPE = "JWT"
+    }
+
+    object Body {
+        const val AUDIENCE = "Ktor-todo"
+    }
+
+    const val AUTH_HEADER_SCHEMA = "Bearer"
 }

@@ -2,7 +2,7 @@ package com.kissybnts.app.repository
 
 import com.kissybnts.extension.toJavaLocalDateTime
 import com.kissybnts.app.model.UserModel
-import com.kissybnts.app.table.AuthProvider
+import com.kissybnts.app.enumeration.AuthProvider
 import com.kissybnts.app.table.UserTable
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert

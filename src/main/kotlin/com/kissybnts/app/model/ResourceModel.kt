@@ -3,7 +3,7 @@ package com.kissybnts.app.model
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.kissybnts.extension.toJavaLocalDate
 import com.kissybnts.extension.toJavaLocalDateTime
-import com.kissybnts.app.table.AuthProvider
+import com.kissybnts.app.enumeration.AuthProvider
 import com.kissybnts.app.table.ProjectTable
 import com.kissybnts.app.table.TaskTable
 import com.kissybnts.app.table.UserTable
