@@ -11,7 +11,7 @@ import io.ktor.auth.AuthenticationPipeline
 import io.ktor.auth.HttpAuthHeader
 import io.ktor.auth.parseAuthorizationHeader
 
-fun AuthenticationPipeline.jwtAuthentication(realm: String) {
+fun AuthenticationPipeline.jwtAuthentication() {
     val jwtService = JwtService()
     intercept(AuthenticationPipeline.RequestAuthentication) { context ->
         val authHeader = call.request.parseAuthorizationHeader()?: throw InvalidCredentialException()

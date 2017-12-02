@@ -41,6 +41,10 @@ class JwtService {
             throw InvalidCredentialException("Token has already been expired.")
         }
 
+        if (jws.body.audience != "Ktor-todo") {
+            throw InvalidCredentialException()
+        }
+
         val subject = jws.body.subject ?: throw InvalidCredentialException()
 
         return try {
