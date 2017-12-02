@@ -12,10 +12,7 @@ import io.ktor.application.*
 import io.ktor.auth.authentication
 import io.ktor.client.HttpClient
 import io.ktor.client.backend.apache.ApacheBackend
-import io.ktor.features.CallLogging
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
-import io.ktor.features.StatusPages
+import io.ktor.features.*
 import io.ktor.http.HttpStatusCode
 import io.ktor.locations.Locations
 import io.ktor.locations.get
@@ -29,6 +26,7 @@ fun Application.main() {
     Database.setUp(databaseConfig)
 
     install(DefaultHeaders)
+    install(HSTS)
     install(CallLogging)
     install(Locations)
     install(ContentNegotiation) {
