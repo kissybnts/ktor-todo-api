@@ -18,6 +18,10 @@ class TaskService(private val taskRepository: TaskRepository = TaskRepository,
         return taskRepository.selectAll(userId)
     }
 
+    fun selectAll(userId: Int, projectId: Int): List<TaskModel> {
+        return taskRepository.selectAll(userId, projectId)
+    }
+
     fun create(request: CreateTaskRequest, userId: Int): TaskModel {
         checkIsUsersProject(request.projectId, userId)
 

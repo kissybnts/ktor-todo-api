@@ -18,13 +18,17 @@ object TaskRepository {
     fun selectAll(userId: Int): List<TaskModel> {
         // transaction{}.map{}をするとNo transactionでエラーを吐く
         return transaction {
-            (TaskTable innerJoin ProjectTable).slice(TaskTable.columns).select { ProjectTable.userId.eq(userId) }.map { TaskModel(it) }
+            (TaskTable innerJoin ProjectTable).slice(TaskTable.columns).select { ProjectTable.userId.eq(userId) }.orderBy(TaskTable.id, true).map { TaskModel(it) }
         }
+    }
+
+    fun selectAll(userId: Int, projectId: Int): List<TaskModel> {
+        return transaction { joinOnlyProjectId(userId).select { TaskTable.projectId.eq(projectId) }.orderBy(TaskTable.id, true).map { TaskModel(it) } }
     }
 
     fun selectAllBelongProject(projectId: Int, userId: Int): List<TaskModel> {
         return transaction {
-            TaskTable.innerJoin(ProjectTable).select { TaskTable.projectId.eq(projectId) and ProjectTable.userId.eq(userId) }.map { TaskModel(it) }
+            TaskTable.innerJoin(ProjectTable).select { TaskTable.projectId.eq(projectId) and ProjectTable.userId.eq(userId) }.orderBy(TaskTable.id, true).map { TaskModel(it) }
         }
     }
 

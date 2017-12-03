@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
 object ProjectRepository {
-    fun selectAll(userId: Int): List<ProjectModel> = transaction { ProjectTable.select { ProjectTable.userId.eq(userId) }.map { ProjectModel(it) } }
+    fun selectAll(userId: Int): List<ProjectModel> = transaction { ProjectTable.select { ProjectTable.userId.eq(userId) }.orderBy(ProjectTable.id, true).map { ProjectModel(it) } }
 
     fun select(id: Int, userId: Int): ProjectModel? = transaction { ProjectTable.select { ProjectTable.id.eq(id) and ProjectTable.userId.eq(userId) }.firstOrNull()?.let { ProjectModel(it) } }
 

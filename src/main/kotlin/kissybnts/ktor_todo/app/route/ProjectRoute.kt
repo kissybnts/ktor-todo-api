@@ -10,6 +10,7 @@ import io.ktor.locations.post
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
+import kissybnts.ktor_todo.app.response.ProjectListResponse
 
 // private modifier makes an exception when access to that class.
 // kotlin.reflect.full.IllegalCallableAccessException: Class kotlin.reflect.jvm.internal.FunctionCaller$Constructor can not access a member of class kissybnts.Projects with modifiers "public"
@@ -26,7 +27,7 @@ internal fun Route.projects(projectService: ProjectService = ProjectService()) {
         val principal = call.jwtUserSubject()
 
         val all = projectService.selectAll(principal.id)
-        call.respond(all)
+        call.respond(ProjectListResponse(all))
     }
 
     post<Projects> {
