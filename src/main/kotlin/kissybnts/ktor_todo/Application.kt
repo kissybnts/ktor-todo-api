@@ -27,14 +27,13 @@ fun Application.main() {
 
     install(DefaultHeaders)
     install(HSTS)
+    install(CORS) { setUp() }
     install(CallLogging)
     install(Locations)
     install(ContentNegotiation) {
         jacksonSetUp()
     }
-    install(StatusPages) {
-        setUp(log)
-    }
+    install(StatusPages) { setUp(log) }
 
     install(Routing) {
         val jwtService = JwtService()

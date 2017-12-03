@@ -18,8 +18,10 @@ import kissybnts.ktor_todo.getEnv
 import io.jsonwebtoken.ExpiredJwtException
 import io.ktor.application.call
 import io.ktor.config.ApplicationConfig
+import io.ktor.features.CORS
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.StatusPages
+import io.ktor.http.HttpHeaders
 import io.ktor.jackson.jackson
 import org.jetbrains.exposed.sql.Database
 import org.slf4j.Logger
@@ -96,4 +98,9 @@ internal fun StatusPages.Configuration.setUp(log: Logger) {
         log.error(it)
         call.internalServerError(ErrorResponse(it, DefaultMessages.Error.SOMETHING_WRONG))
     }
+}
+
+internal fun CORS.Configuration.setUp() {
+    anyHost()
+    headers.addAll(listOf(HttpHeaders.Authorization, HttpHeaders.ContentType))
 }
