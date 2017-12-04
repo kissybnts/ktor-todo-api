@@ -24,14 +24,16 @@ import io.ktor.routing.param
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import java.util.concurrent.Executors
 
-@location("/auth/login/{type}") data class Login(val type: String, val code: String? = null, val state: String? = null)
+@location("/auth/login") class Login {
+    @location("/{type}") data class OAuth(val type: String, val code: String? = null, val state: String? = null)
+}
 
 fun Route.login(client: HttpClient, jwtService: JwtService = JwtService(), userService: UserService = UserService()) {
     val exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4)
 
-    location<Login> {
+    location<Login.OAuth> {
         authentication {
-            oauthAtLocation<Login>(client, exec.asCoroutineDispatcher(), providerLookup = { loginProvider[it.type] }, urlProvider = { _, p -> redirectUrl(Login(p.name), false) })
+            oauthAtLocation<Login.OAuth>(client, exec.asCoroutineDispatcher(), providerLookup = { loginProvider[it.type] }, urlProvider = { _, p -> redirectUrl(Login.OAuth(p.name), false) })
         }
 
         param("error") {
