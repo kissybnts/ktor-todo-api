@@ -4,16 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.auth.OAuthServerSettings
-import javax.crypto.Cipher
-import javax.crypto.spec.SecretKeySpec
 
 val objectMapper: ObjectMapper = jacksonObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
-
-val cipher = Cipher.getInstance("AES").apply {
-    val key = System.getenv("PASS_SECRET_KEY")
-    init(Cipher.ENCRYPT_MODE, SecretKeySpec(key.toByteArray(),"AES"))
-    init(Cipher.DECRYPT_MODE, SecretKeySpec(key.toByteArray(), "AES"))
-}
 
 object EnvironmentVariableKeys {
     /**
@@ -27,12 +19,18 @@ object EnvironmentVariableKeys {
         const val DB_USER: String = "${GRADLE_ENV}DB_USER"
         const val DB_PASS: String = "${GRADLE_ENV}DB_PASS"
     }
+    // JWT
     const val JWT_SECRET_KEY: String = "JWT_SECRET_KEY"
     const val JWT_EXPIRE_TIME: String = "JWT_EXPIRE_TIME"
     const val JWT_REFRESH_SECRET_KEY: String = "JWT_REFRESH_SECRET_KEY"
     const val JWT_REFRESH_EXPIRE_TIME: String = "JWT_REFRESH_EXPIRE_TIME"
+
+    // GitHub
     const val GITHUB_CLIENT_ID: String = "GITHUB_CLIENT_ID"
     const val GITHUB_CLIENT_SECRET: String = "GITHUB_CLIENT_SECRET"
+
+    // Password encryption
+    const val PASSWORD_CRYPT_KEY: String = "PASSWORD_CRYPT_KEY"
 }
 
 object FormatConstants {
