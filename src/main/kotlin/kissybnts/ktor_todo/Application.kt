@@ -3,10 +3,6 @@ package kissybnts.ktor_todo
 import kissybnts.ktor_todo.app.pipeline.jwtAuthentication
 import kissybnts.ktor_todo.extension.jacksonSetUp
 import kissybnts.ktor_todo.extension.setUp
-import kissybnts.ktor_todo.app.route.Index
-import kissybnts.ktor_todo.app.route.login
-import kissybnts.ktor_todo.app.route.projects
-import kissybnts.ktor_todo.app.route.tasks
 import kissybnts.ktor_todo.app.service.JwtService
 import io.ktor.application.*
 import io.ktor.auth.authentication
@@ -19,6 +15,7 @@ import io.ktor.locations.get
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.route
+import kissybnts.ktor_todo.app.route.*
 import org.jetbrains.exposed.sql.Database
 
 fun Application.main() {
@@ -47,7 +44,7 @@ fun Application.main() {
             client.close()
         }
 
-        login(client, jwtService)
+        auth(client, jwtService)
 
         route("/v1") {
             authentication {
