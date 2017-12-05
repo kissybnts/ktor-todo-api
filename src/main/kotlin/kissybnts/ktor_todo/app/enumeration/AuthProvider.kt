@@ -1,7 +1,7 @@
 package kissybnts.ktor_todo.app.enumeration
 
 enum class AuthProvider {
-    GitHub;
+    GitHub, Email;
 
     companion object {
         fun fromName(name: String): AuthProvider {
