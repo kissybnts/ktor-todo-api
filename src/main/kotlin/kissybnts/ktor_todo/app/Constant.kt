@@ -1,6 +1,19 @@
 package kissybnts.ktor_todo.app
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.auth.OAuthServerSettings
+import javax.crypto.Cipher
+import javax.crypto.spec.SecretKeySpec
+
+val objectMapper: ObjectMapper = jacksonObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+
+val cipher = Cipher.getInstance("AES").apply {
+    val key = System.getenv("PASS_SECRET_KEY")
+    init(Cipher.ENCRYPT_MODE, SecretKeySpec(key.toByteArray(),"AES"))
+    init(Cipher.DECRYPT_MODE, SecretKeySpec(key.toByteArray(), "AES"))
+}
 
 object EnvironmentVariableKeys {
     /**

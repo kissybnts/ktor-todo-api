@@ -4,7 +4,7 @@ import kissybnts.ktor_todo.app.DefaultMessages
 import kissybnts.ktor_todo.app.EnvironmentVariableKeys
 import kissybnts.ktor_todo.app.JwtConstants
 import kissybnts.ktor_todo.app.model.UserModel
-import kissybnts.ktor_todo.app.pipeline.objectMapper
+import kissybnts.ktor_todo.app.objectMapper
 import kissybnts.ktor_todo.exception.InvalidCredentialException
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts

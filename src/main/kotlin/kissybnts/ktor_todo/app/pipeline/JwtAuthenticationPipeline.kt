@@ -1,8 +1,5 @@
 package kissybnts.ktor_todo.app.pipeline
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kissybnts.ktor_todo.app.JwtConstants
 import kissybnts.ktor_todo.app.service.JwtService
 import kissybnts.ktor_todo.app.service.TokenType
@@ -23,6 +20,3 @@ fun AuthenticationPipeline.jwtAuthentication(jwtService: JwtService = JwtService
         context.principal(user)
     }
 }
-
-
-val objectMapper: ObjectMapper = jacksonObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)

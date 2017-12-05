@@ -4,7 +4,7 @@ import kissybnts.ktor_todo.app.enumeration.AuthProvider
 import kissybnts.ktor_todo.app.model.GitHubUser
 import kissybnts.ktor_todo.app.model.UserModel
 import kissybnts.ktor_todo.app.model.toCushioningUser
-import kissybnts.ktor_todo.app.pipeline.objectMapper
+import kissybnts.ktor_todo.app.objectMapper
 import kissybnts.ktor_todo.app.repository.CushioningUser
 import kissybnts.ktor_todo.app.repository.UserRepository
 import kissybnts.ktor_todo.exception.ProviderAuthenticationErrorException
@@ -48,6 +48,7 @@ class UserService(private val userRepository: UserRepository = UserRepository) {
                 val githubUser = acquireGitHubUser(accessToken)
                 githubUser.toCushioningUser(code)
             }
+            AuthProvider.Email -> throw IllegalStateException("Un supported type.")
         }
     }
 
