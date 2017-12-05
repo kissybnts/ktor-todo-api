@@ -31,7 +31,7 @@ import java.util.concurrent.Executors
 
 @location("/auth") class Auth {
     @location("/login") class Login
-    @location("/sign-in") class SignIn
+    @location("/sign-up") class SignUp
 }
 
 fun Route.auth(client: HttpClient, jwtService: JwtService = JwtService(), userService: UserService = UserService()) {
@@ -49,7 +49,7 @@ fun Route.auth(client: HttpClient, jwtService: JwtService = JwtService(), userSe
         }
     }
 
-    post<Auth.SignIn> {
+    post<Auth.SignUp> {
         call.respond("OK")
     }
 
