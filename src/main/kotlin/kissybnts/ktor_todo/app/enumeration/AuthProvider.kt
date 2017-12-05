@@ -1,5 +1,6 @@
 package kissybnts.ktor_todo.app.enumeration
 
+// TODO remove Email because it is not External Provider
 enum class AuthProvider {
     GitHub, Email;
 
