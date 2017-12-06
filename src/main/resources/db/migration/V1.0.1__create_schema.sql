@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS users (
   id INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
-  image_url VARCHAR(255) NOT NULL,
+  image_url TEXT NOT NULL,
   auth_type ENUM('Email', 'OAuth') NOT NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS oauth_credentials(
   user_id INT NOT NULL,
   provider_type ENUM('GitHub') NOT NULL,
   provider_id INT NOT NULL,
-  provider_code INT NOT NULL,
+  provider_code VARCHAR(255) NOT NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id),

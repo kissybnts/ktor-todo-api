@@ -58,6 +58,6 @@ enum class TokenType(private val key: String, private val expirationKey: String)
     fun hour(): Long = System.getenv(this.expirationKey).toLong()
 }
 
-data class JwtUserSubject(val id: Int, val providerId: Int): Principal {
-    constructor(user: UserModel): this(user.id, user.providerId)
+data class JwtUserSubject(val id: Int): Principal {
+    constructor(user: UserModel): this(user.id)
 }

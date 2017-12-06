@@ -14,9 +14,6 @@ data class UserModel(val id: Int,
                      val name: String,
                      val imageUrl: String,
                      val authType: AuthType,
-                     val providerType: AuthProvider,
-                     val providerCode: String,
-                     val providerId: Int,
                      @JsonIgnore
                      val createdAt: LocalDateTime,
                      @JsonIgnore
@@ -26,9 +23,6 @@ data class UserModel(val id: Int,
             resultRow[UserTable.name],
             resultRow[UserTable.imageUrl],
             resultRow[UserTable.authType],
-            resultRow[UserTable.providerType],
-            resultRow[UserTable.providerCode],
-            resultRow[UserTable.providerId],
             resultRow[UserTable.createdAt].toJavaLocalDateTime(),
             resultRow[UserTable.updatedAt].toJavaLocalDateTime()
     )
@@ -37,6 +31,7 @@ data class UserModel(val id: Int,
 sealed class AuthCredentialModel
 
 data class OAuthCredentialModel(val providerType: AuthProvider,
+                                @JsonIgnore
                                 val providerCode: String,
                                 val projectId: Int,
                                 @JsonIgnore

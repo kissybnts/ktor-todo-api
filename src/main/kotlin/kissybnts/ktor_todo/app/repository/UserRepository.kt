@@ -3,6 +3,9 @@ package kissybnts.ktor_todo.app.repository
 import kissybnts.ktor_todo.extension.toJavaLocalDateTime
 import kissybnts.ktor_todo.app.model.UserModel
 import kissybnts.ktor_todo.app.enumeration.AuthProvider
+import kissybnts.ktor_todo.app.enumeration.AuthType
+import kissybnts.ktor_todo.app.table.EmailCredentialTable
+import kissybnts.ktor_todo.app.table.OAuthCredentialTable
 import kissybnts.ktor_todo.app.table.UserTable
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
@@ -21,7 +24,7 @@ object UserRepository {
 
     fun selectByProvider(providerType: AuthProvider, providerId: Int): UserModel? {
         return transaction {
-            UserTable.select{ UserTable.providerType.eq(providerType) and UserTable.providerId.eq(providerId) }.firstOrNull()
+            UserTable.innerJoin(OAuthCredentialTable).select { OAuthCredentialTable.providerType.eq(providerType) and OAuthCredentialTable.providerId.eq(providerId) }.firstOrNull()
         }?.let { UserModel(it) }
     }
 
@@ -30,32 +33,59 @@ object UserRepository {
     // ---------------
     fun insert(cushioningUser: CushioningUser): UserModel = transaction { insertWithoutTransaction(cushioningUser) }
 
+    fun insert(name: String, email: String, password: String): UserModel = transaction { insertWithoutTransaction(name, email, password) }
+
     private fun insertWithoutTransaction(cushioningUser: CushioningUser): UserModel {
         val now = DateTime()
         val statement =  UserTable.insert {
             it[UserTable.name] = cushioningUser.name
             it[UserTable.imageUrl] = cushioningUser.imageUrl
-            it[UserTable.providerType] = cushioningUser.providerType
-            it[UserTable.providerCode] = cushioningUser.providerCode
-            it[UserTable.providerId] = cushioningUser.providerId
+            it[UserTable.authType] = AuthType.OAuth
             it[UserTable.createdAt] = now
             it[UserTable.updatedAt] = now
         }
         val id = statement.generatedKey?.toInt() ?: throw IllegalStateException("Generated id is null.")
-        return UserModel(id, cushioningUser.name, cushioningUser.imageUrl, cushioningUser.providerType, cushioningUser.providerCode, cushioningUser.providerId, now.toJavaLocalDateTime(), now.toJavaLocalDateTime())
+        OAuthCredentialTable.insert {
+            it[OAuthCredentialTable.userId] = id
+            it[OAuthCredentialTable.providerType] = cushioningUser.providerType
+            it[OAuthCredentialTable.providerCode] = cushioningUser.providerCode
+            it[OAuthCredentialTable.providerId] = cushioningUser.providerId
+            it[OAuthCredentialTable.createdAt] = now
+            it[OAuthCredentialTable.updatedAt] = now
+        }
+        return UserModel(id, cushioningUser.name, cushioningUser.imageUrl, AuthType.OAuth, now.toJavaLocalDateTime(), now.toJavaLocalDateTime())
+    }
+
+    private fun insertWithoutTransaction(name: String, email: String, password: String): UserModel {
+        val now = DateTime()
+        val statement = UserTable.insert {
+            it[UserTable.name]  = name
+            it[UserTable.imageUrl] = ""
+            it[UserTable.authType] = AuthType.Email
+            it[UserTable.createdAt] = now
+            it[UserTable.updatedAt] = now
+        }
+        val id = statement.generatedKey?.toInt() ?: throw IllegalStateException("Generated id is null.")
+        EmailCredentialTable.insert {
+            it[EmailCredentialTable.userId] = id
+            it[EmailCredentialTable.email] = email
+            it[EmailCredentialTable.password] = password
+            it[EmailCredentialTable.createdAt] = now
+            it[EmailCredentialTable.updatedAt] = now
+        }
+        return UserModel(id, name, "", AuthType.Email, now.toJavaLocalDateTime(), now.toJavaLocalDateTime())
     }
 
     // ---------------
     // Update
     // ---------------
-    fun loginUpdate(user: UserModel, code: String): UserModel {
+    fun loginUpdate(userId: Int, code: String) {
         val now = DateTime()
         transaction {
-            UserTable.update({ UserTable.id.eq(user.id)}) {
-                it[UserTable.providerCode] = code
-                it[UserTable.updatedAt] = now
+            OAuthCredentialTable.update({ OAuthCredentialTable.userId.eq(userId) }) {
+                it[OAuthCredentialTable.providerCode] = code
+                it[OAuthCredentialTable.updatedAt] = now
             }
         }
-        return user.copy(providerCode = code, updatedAt = now.toJavaLocalDateTime())
     }
 }

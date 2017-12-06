@@ -16,8 +16,14 @@ import io.ktor.client.request.header
 import io.ktor.client.utils.url
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import kissybnts.ktor_todo.app.utils.PasswordEncryption
 
 class UserService(private val userRepository: UserRepository = UserRepository) {
+
+    fun signUpWithEmail(name: String, email: String, password: String): UserModel {
+        val encrypted = PasswordEncryption.passwordEncrypt(password)
+        return userRepository.insert(name, email, encrypted)
+    }
 
     suspend fun loginWithProvider(providerType: AuthProvider, accessToken: String, code: String): UserModel {
         val cushioningUser = acquireUser(providerType, accessToken, code)
@@ -37,9 +43,14 @@ class UserService(private val userRepository: UserRepository = UserRepository) {
     }
 
     private fun loginUpsert(providerType: AuthProvider, cushioningUser: CushioningUser, code: String): UserModel {
-        return userRepository.selectByProvider(providerType, cushioningUser.providerId)?.let {
-            userRepository.loginUpdate(it, code)
-        } ?: userRepository.insert(cushioningUser)
+        val user = userRepository.selectByProvider(providerType, cushioningUser.providerId)
+
+        return if (user != null) {
+            userRepository.loginUpdate(user.id, code)
+            user
+        } else {
+            userRepository.insert(cushioningUser)
+        }
     }
 
     private suspend fun HttpClient.acquireUser(providerType: AuthProvider, accessToken: String, code: String): CushioningUser {

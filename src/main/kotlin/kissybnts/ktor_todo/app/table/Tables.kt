@@ -16,11 +16,8 @@ object ColumnNames {
 object UserTable : Table("users") {
     val id = integer(ColumnNames.id).primaryKey().autoIncrement()
     val name = varchar(ColumnNames.name, 255)
-    val imageUrl = varchar("image_url", 255)
+    val imageUrl = text("image_url")
     val authType = enumerationByName("auth_type", 10, AuthType::class.java)
-    val providerType = enumerationByName("provider_type", 10, AuthProvider::class.java)
-    val providerCode = varchar("provider_code", 255)
-    val providerId = integer("provider_id")
     val createdAt = datetime(ColumnNames.createdAt).default(DateTime())
     val updatedAt = datetime(ColumnNames.updatedAt).default(DateTime())
     const val foreignKey = "user_id"
