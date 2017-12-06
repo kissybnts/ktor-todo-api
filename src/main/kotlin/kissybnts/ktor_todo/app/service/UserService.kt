@@ -48,7 +48,6 @@ class UserService(private val userRepository: UserRepository = UserRepository) {
                 val githubUser = acquireGitHubUser(accessToken)
                 githubUser.toCushioningUser(code)
             }
-            AuthProvider.Email -> throw IllegalStateException("Un supported type.")
         }
     }
 
