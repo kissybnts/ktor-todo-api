@@ -18,17 +18,6 @@ import java.util.*
 class JwtService {
     data class TokenPair(val accessToken: String, val refreshToken: String)
 
-    fun generateToken(user: UserModel, type: TokenType): String {
-        val expiration = LocalDateTime.now().plusHours(type.hour()).atZone(ZoneId.systemDefault())
-        return Jwts.builder()
-                .setSubject(objectMapper.writeValueAsString(JwtUserSubject(user)))
-                .setAudience(JwtConstants.Body.AUDIENCE)
-                .signWith(SignatureAlgorithm.HS512, type.secretKey())
-                .setExpiration(Date.from(expiration.toInstant()))
-                .setHeaderParam(JwtConstants.Header.TYPE_KEY, JwtConstants.Header.TYPE)
-                .compact()
-    }
-
     suspend fun generateTokenPair(user: UserModel): JwtService.TokenPair {
         val token = async { generateToken(user, TokenType.ACCESS_TOKEN) }
         val refresh = async { generateToken(user, TokenType.REFRESH_TOKEN) }
@@ -55,6 +44,17 @@ class JwtService {
         } catch (ex: Exception) {
             throw InvalidCredentialException()
         }
+    }
+
+    private fun generateToken(user: UserModel, type: TokenType): String {
+        val expiration = LocalDateTime.now().plusHours(type.hour()).atZone(ZoneId.systemDefault())
+        return Jwts.builder()
+                .setSubject(objectMapper.writeValueAsString(JwtUserSubject(user)))
+                .setAudience(JwtConstants.Body.AUDIENCE)
+                .signWith(SignatureAlgorithm.HS512, type.secretKey())
+                .setExpiration(Date.from(expiration.toInstant()))
+                .setHeaderParam(JwtConstants.Header.TYPE_KEY, JwtConstants.Header.TYPE)
+                .compact()
     }
 }
 

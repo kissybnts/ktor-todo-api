@@ -77,10 +77,9 @@ fun Route.auth(client: HttpClient, jwtService: JwtService = JwtService(), userSe
 
             val user = userService.loginWithProvider(loginType, principal.accessToken, code)
 
-            val token = jwtService.generateToken(user, TokenType.ACCESS_TOKEN)
-            val refresh = jwtService.generateToken(user, TokenType.REFRESH_TOKEN)
+            val tokenPair = jwtService.generateTokenPair(user)
 
-            call.respond(LoginResponse(user, token, refresh))
+            call.respond(LoginResponse(user, tokenPair.accessToken, tokenPair.refreshToken))
         }
     }
 }
