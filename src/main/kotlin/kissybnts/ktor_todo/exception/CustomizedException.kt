@@ -7,3 +7,5 @@ class ResourceNotFoundException(message: String): Exception(message)
 class ProviderAuthenticationErrorException(message: String = DefaultMessages.Error.AUTH_PROCESS_FAILED): Exception(message)
 
 class InvalidCredentialException(message: String = DefaultMessages.Error.INVALID_CREDENTIAL): Exception(message)
+
+class UserNotFoundException(message: String = DefaultMessages.Error.USER_NOT_FOUND): Exception(message)

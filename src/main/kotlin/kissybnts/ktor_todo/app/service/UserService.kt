@@ -17,8 +17,11 @@ import io.ktor.client.utils.url
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import kissybnts.ktor_todo.app.DefaultMessages
+import kissybnts.ktor_todo.app.request.LoginRequest
 import kissybnts.ktor_todo.app.request.SignUpRequest
 import kissybnts.ktor_todo.app.utils.PasswordEncryption
+import kissybnts.ktor_todo.exception.InvalidCredentialException
+import kissybnts.ktor_todo.exception.UserNotFoundException
 import java.sql.SQLIntegrityConstraintViolationException
 
 class UserService(private val userRepository: UserRepository = UserRepository) {
@@ -37,6 +40,15 @@ class UserService(private val userRepository: UserRepository = UserRepository) {
     suspend fun loginWithProvider(providerType: AuthProvider, accessToken: String, code: String): UserModel {
         val cushioningUser = acquireUser(providerType, accessToken, code)
         return loginUpsert(providerType, cushioningUser, code)
+    }
+
+    fun loginWithEmail(request: LoginRequest): UserModel {
+        val userCredentialPair = userRepository.selectByEmail(request.email)?: throw UserNotFoundException()
+        if (PasswordEncryption.isCorrectPassword(request.password, userCredentialPair.second.password)) {
+            return userCredentialPair.first
+        } else {
+            throw InvalidCredentialException()
+        }
     }
 
     private suspend fun acquireUser(providerType: AuthProvider, accessToken: String, code: String): OAuthUser {

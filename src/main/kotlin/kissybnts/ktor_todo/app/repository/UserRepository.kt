@@ -4,6 +4,7 @@ import kissybnts.ktor_todo.extension.toJavaLocalDateTime
 import kissybnts.ktor_todo.app.model.UserModel
 import kissybnts.ktor_todo.app.enumeration.AuthProvider
 import kissybnts.ktor_todo.app.enumeration.AuthType
+import kissybnts.ktor_todo.app.model.EmailCredentialModel
 import kissybnts.ktor_todo.app.model.OAuthUser
 import kissybnts.ktor_todo.app.table.EmailCredentialTable
 import kissybnts.ktor_todo.app.table.OAuthCredentialTable
@@ -25,6 +26,12 @@ object UserRepository {
         return transaction {
             UserTable.innerJoin(OAuthCredentialTable).select { OAuthCredentialTable.providerType.eq(providerType) and OAuthCredentialTable.providerId.eq(providerId) }.firstOrNull()
         }?.let { UserModel(it) }
+    }
+
+    fun selectByEmail(email: String): Pair<UserModel, EmailCredentialModel>? {
+        return transaction {
+            UserTable.innerJoin(EmailCredentialTable).select { EmailCredentialTable.email.eq(email) }.firstOrNull()
+        }?.let { Pair(UserModel(it), EmailCredentialModel(it)) }
     }
 
     // ---------------

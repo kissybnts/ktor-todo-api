@@ -24,6 +24,7 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.method
 import io.ktor.routing.param
+import kissybnts.ktor_todo.app.request.LoginRequest
 import kissybnts.ktor_todo.app.request.SignUpRequest
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import java.util.concurrent.Executors
@@ -45,7 +46,10 @@ fun Route.auth(client: HttpClient, jwtService: JwtService = JwtService(), userSe
             }
 
             handle {
-                call.respond("OK")
+                val request = call.receive<LoginRequest>()
+                val user = userService.loginWithEmail(request)
+                val tokenPair = jwtService.generateTokenPair(user)
+                call.respond(LoginResponse(user, tokenPair.accessToken, tokenPair.refreshToken))
             }
         }
     }

@@ -29,6 +29,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import io.ktor.util.error
+import kissybnts.ktor_todo.exception.UserNotFoundException
 
 /**
  * set up database config with `ApplicationConfig` and environment variables.
@@ -93,6 +94,10 @@ internal fun StatusPages.Configuration.setUp(log: Logger) {
     exception<ExpiredJwtException> {
         log.error(it)
         call.unauthorized(ErrorResponse(it, "Token has already been expired."))
+    }
+    exception<UserNotFoundException> {
+        log.error(it)
+        call.notFound(ErrorResponse(it, DefaultMessages.Error.USER_NOT_FOUND))
     }
     exception<Exception> {
         log.error(it)
