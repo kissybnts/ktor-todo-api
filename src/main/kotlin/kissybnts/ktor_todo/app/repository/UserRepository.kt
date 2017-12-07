@@ -4,6 +4,7 @@ import kissybnts.ktor_todo.extension.toJavaLocalDateTime
 import kissybnts.ktor_todo.app.model.UserModel
 import kissybnts.ktor_todo.app.enumeration.AuthProvider
 import kissybnts.ktor_todo.app.enumeration.AuthType
+import kissybnts.ktor_todo.app.model.OAuthUser
 import kissybnts.ktor_todo.app.table.EmailCredentialTable
 import kissybnts.ktor_todo.app.table.OAuthCredentialTable
 import kissybnts.ktor_todo.app.table.UserTable
@@ -13,8 +14,6 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
-
-data class CushioningUser(val name: String, val imageUrl: String, val providerType: AuthProvider, val providerCode: String, val providerId: Int)
 
 object UserRepository {
     // ---------------
@@ -31,15 +30,15 @@ object UserRepository {
     // ---------------
     // Insert
     // ---------------
-    fun insert(cushioningUser: CushioningUser): UserModel = transaction { insertWithoutTransaction(cushioningUser) }
+    fun insert(OAuthUser: OAuthUser): UserModel = transaction { insertWithoutTransaction(OAuthUser) }
 
     fun insert(name: String, email: String, password: String): UserModel = transaction { insertWithoutTransaction(name, email, password) }
 
-    private fun insertWithoutTransaction(cushioningUser: CushioningUser): UserModel {
+    private fun insertWithoutTransaction(OAuthUser: OAuthUser): UserModel {
         val now = DateTime()
         val statement =  UserTable.insert {
-            it[UserTable.name] = cushioningUser.name
-            it[UserTable.imageUrl] = cushioningUser.imageUrl
+            it[UserTable.name] = OAuthUser.name
+            it[UserTable.imageUrl] = OAuthUser.imageUrl
             it[UserTable.authType] = AuthType.OAuth
             it[UserTable.createdAt] = now
             it[UserTable.updatedAt] = now
@@ -47,13 +46,13 @@ object UserRepository {
         val id = statement.generatedKey?.toInt() ?: throw IllegalStateException("Generated id is null.")
         OAuthCredentialTable.insert {
             it[OAuthCredentialTable.userId] = id
-            it[OAuthCredentialTable.providerType] = cushioningUser.providerType
-            it[OAuthCredentialTable.providerCode] = cushioningUser.providerCode
-            it[OAuthCredentialTable.providerId] = cushioningUser.providerId
+            it[OAuthCredentialTable.providerType] = OAuthUser.providerType
+            it[OAuthCredentialTable.providerCode] = OAuthUser.providerCode
+            it[OAuthCredentialTable.providerId] = OAuthUser.providerId
             it[OAuthCredentialTable.createdAt] = now
             it[OAuthCredentialTable.updatedAt] = now
         }
-        return UserModel(id, cushioningUser.name, cushioningUser.imageUrl, AuthType.OAuth, now.toJavaLocalDateTime(), now.toJavaLocalDateTime())
+        return UserModel(id, OAuthUser.name, OAuthUser.imageUrl, AuthType.OAuth, now.toJavaLocalDateTime(), now.toJavaLocalDateTime())
     }
 
     private fun insertWithoutTransaction(name: String, email: String, password: String): UserModel {

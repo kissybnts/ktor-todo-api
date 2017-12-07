@@ -5,7 +5,7 @@ import kissybnts.ktor_todo.app.model.GitHubUser
 import kissybnts.ktor_todo.app.model.UserModel
 import kissybnts.ktor_todo.app.model.toCushioningUser
 import kissybnts.ktor_todo.app.objectMapper
-import kissybnts.ktor_todo.app.repository.CushioningUser
+import kissybnts.ktor_todo.app.model.OAuthUser
 import kissybnts.ktor_todo.app.repository.UserRepository
 import kissybnts.ktor_todo.exception.ProviderAuthenticationErrorException
 import io.ktor.client.HttpClient
@@ -30,7 +30,7 @@ class UserService(private val userRepository: UserRepository = UserRepository) {
         return loginUpsert(providerType, cushioningUser, code)
     }
 
-    private suspend fun acquireUser(providerType: AuthProvider, accessToken: String, code: String): CushioningUser {
+    private suspend fun acquireUser(providerType: AuthProvider, accessToken: String, code: String): OAuthUser {
         val client = HttpClient(ApacheBackend)
 
         return try {
@@ -42,18 +42,18 @@ class UserService(private val userRepository: UserRepository = UserRepository) {
         }
     }
 
-    private fun loginUpsert(providerType: AuthProvider, cushioningUser: CushioningUser, code: String): UserModel {
-        val user = userRepository.selectByProvider(providerType, cushioningUser.providerId)
+    private fun loginUpsert(providerType: AuthProvider, OAuthUser: OAuthUser, code: String): UserModel {
+        val user = userRepository.selectByProvider(providerType, OAuthUser.providerId)
 
         return if (user != null) {
             userRepository.loginUpdate(user.id, code)
             user
         } else {
-            userRepository.insert(cushioningUser)
+            userRepository.insert(OAuthUser)
         }
     }
 
-    private suspend fun HttpClient.acquireUser(providerType: AuthProvider, accessToken: String, code: String): CushioningUser {
+    private suspend fun HttpClient.acquireUser(providerType: AuthProvider, accessToken: String, code: String): OAuthUser {
         return when (providerType) {
             AuthProvider.GitHub -> {
                 val githubUser = acquireGitHubUser(accessToken)

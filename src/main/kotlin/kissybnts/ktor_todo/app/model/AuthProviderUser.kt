@@ -1,7 +1,6 @@
 package kissybnts.ktor_todo.app.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import kissybnts.ktor_todo.app.repository.CushioningUser
 import kissybnts.ktor_todo.app.enumeration.AuthProvider
 
 sealed class AuthProviderUser
@@ -9,8 +8,10 @@ sealed class AuthProviderUser
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GitHubUser(val id: Int, val login: String, val name: String, val avatarUrl: String): AuthProviderUser()
 
-fun AuthProviderUser.toCushioningUser(providerCode: String): CushioningUser {
+fun AuthProviderUser.toCushioningUser(providerCode: String): OAuthUser {
     return when (this) {
-        is GitHubUser -> CushioningUser(name, avatarUrl, AuthProvider.GitHub, providerCode, id)
+        is GitHubUser -> OAuthUser(name, avatarUrl, AuthProvider.GitHub, providerCode, id)
     }
 }
+
+data class OAuthUser(val name: String, val imageUrl: String, val providerType: AuthProvider, val providerCode: String, val providerId: Int)
