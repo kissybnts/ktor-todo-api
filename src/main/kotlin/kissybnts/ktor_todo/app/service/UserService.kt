@@ -16,13 +16,21 @@ import io.ktor.client.request.header
 import io.ktor.client.utils.url
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import kissybnts.ktor_todo.app.request.SignUpRequest
 import kissybnts.ktor_todo.app.utils.PasswordEncryption
+import java.sql.SQLIntegrityConstraintViolationException
 
 class UserService(private val userRepository: UserRepository = UserRepository) {
 
-    fun signUpWithEmail(name: String, email: String, password: String): UserModel {
-        val encrypted = PasswordEncryption.passwordEncrypt(password)
-        return userRepository.insert(name, email, encrypted)
+    fun signUpWithEmail(signUpRequest: SignUpRequest): UserModel {
+        val encrypted = PasswordEncryption.passwordEncrypt(signUpRequest.password)
+        try {
+            return userRepository.insert(signUpRequest.name, signUpRequest.email, encrypted)
+        } catch (e: SQLIntegrityConstraintViolationException) {
+            throw IllegalStateException(e.message)
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
     suspend fun loginWithProvider(providerType: AuthProvider, accessToken: String, code: String): UserModel {

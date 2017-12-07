@@ -20,10 +20,12 @@ import io.ktor.locations.oauthAtLocation
 import io.ktor.locations.post
 import io.ktor.request.host
 import io.ktor.request.port
+import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.method
 import io.ktor.routing.param
+import kissybnts.ktor_todo.app.request.SignUpRequest
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import java.util.concurrent.Executors
 
@@ -50,7 +52,10 @@ fun Route.auth(client: HttpClient, jwtService: JwtService = JwtService(), userSe
     }
 
     post<Auth.SignUp> {
-        call.respond("OK")
+        val signUpRequest = call.receive<SignUpRequest>()
+        val user = userService.signUpWithEmail(signUpRequest)
+        val tokenPair = jwtService.generateTokenPair(user)
+        call.respond(LoginResponse(user, tokenPair.accessToken, tokenPair.refreshToken))
     }
 
     location<OAuthLogin> {

@@ -10,11 +10,13 @@ import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.ktor.auth.Principal
+import kotlinx.coroutines.experimental.async
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 
 class JwtService {
+    data class TokenPair(val accessToken: String, val refreshToken: String)
 
     fun generateToken(user: UserModel, type: TokenType): String {
         val expiration = LocalDateTime.now().plusHours(type.hour()).atZone(ZoneId.systemDefault())
@@ -25,6 +27,12 @@ class JwtService {
                 .setExpiration(Date.from(expiration.toInstant()))
                 .setHeaderParam(JwtConstants.Header.TYPE_KEY, JwtConstants.Header.TYPE)
                 .compact()
+    }
+
+    suspend fun generateTokenPair(user: UserModel): JwtService.TokenPair {
+        val token = async { generateToken(user, TokenType.ACCESS_TOKEN) }
+        val refresh = async { generateToken(user, TokenType.REFRESH_TOKEN) }
+        return TokenPair(token.await(), refresh.await())
     }
 
     fun verifyToken(token: String, type: TokenType): JwtUserSubject {
