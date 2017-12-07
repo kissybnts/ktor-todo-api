@@ -31,11 +31,10 @@ import kissybnts.ktor_todo.extension.jwtUserSubject
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import java.util.concurrent.Executors
 
-@location("/oauth/login/{type}") data class OAuthLogin(val type: String, val code: String? = null, val state: String? = null)
-
 @location("/auth") class Auth {
-    @location("/login") class Login
     @location("/sign-up") class SignUp
+    @location("/login") class Login
+    @location("/oauth-login/{type}") data class OAuthLogin(val type: String, val code: String? = null, val state: String? = null)
     @location("/refresh") class Refresh
 }
 
@@ -56,9 +55,9 @@ fun Route.auth(client: HttpClient, jwtService: JwtService = JwtService(), userSe
         call.respond(LoginResponse(user, tokenPair.accessToken, tokenPair.refreshToken))
     }
 
-    location<OAuthLogin> {
+    location<Auth.OAuthLogin> {
         authentication {
-            oauthAtLocation<OAuthLogin>(client, exec.asCoroutineDispatcher(), providerLookup = { loginProvider[it.type] }, urlProvider = { _, p -> redirectUrl(OAuthLogin(p.name), false) })
+            oauthAtLocation<Auth.OAuthLogin>(client, exec.asCoroutineDispatcher(), providerLookup = { loginProvider[it.type] }, urlProvider = { _, p -> redirectUrl(Auth.OAuthLogin(p.name), false) })
         }
 
         param("error") {
