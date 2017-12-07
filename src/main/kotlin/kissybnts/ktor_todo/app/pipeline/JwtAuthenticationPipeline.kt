@@ -2,7 +2,7 @@ package kissybnts.ktor_todo.app.pipeline
 
 import kissybnts.ktor_todo.app.JwtConstants
 import kissybnts.ktor_todo.app.service.JwtService
-import kissybnts.ktor_todo.app.service.TokenType
+import kissybnts.ktor_todo.app.enumeration.TokenType
 import kissybnts.ktor_todo.exception.InvalidCredentialException
 import io.ktor.application.call
 import io.ktor.auth.AuthenticationPipeline

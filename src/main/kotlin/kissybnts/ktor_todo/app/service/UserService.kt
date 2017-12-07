@@ -16,6 +16,7 @@ import io.ktor.client.request.header
 import io.ktor.client.utils.url
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import kissybnts.ktor_todo.app.DefaultMessages
 import kissybnts.ktor_todo.app.request.SignUpRequest
 import kissybnts.ktor_todo.app.utils.PasswordEncryption
 import java.sql.SQLIntegrityConstraintViolationException
@@ -44,7 +45,7 @@ class UserService(private val userRepository: UserRepository = UserRepository) {
         return try {
             client.acquireUser(providerType, accessToken, code)
         } catch (ex: Exception) {
-            throw ProviderAuthenticationErrorException()
+            throw ProviderAuthenticationErrorException(ex.message?: DefaultMessages.Error.AUTH_PROCESS_FAILED)
         } finally {
             client.close()
         }

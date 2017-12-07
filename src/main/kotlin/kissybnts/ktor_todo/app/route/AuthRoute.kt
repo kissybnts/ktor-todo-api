@@ -5,7 +5,6 @@ import kissybnts.ktor_todo.app.DefaultMessages
 import kissybnts.ktor_todo.app.enumeration.AuthProvider
 import kissybnts.ktor_todo.app.response.LoginResponse
 import kissybnts.ktor_todo.app.service.JwtService
-import kissybnts.ktor_todo.app.service.TokenType
 import kissybnts.ktor_todo.app.service.UserService
 import kissybnts.ktor_todo.exception.ProviderAuthenticationErrorException
 import io.ktor.application.ApplicationCall

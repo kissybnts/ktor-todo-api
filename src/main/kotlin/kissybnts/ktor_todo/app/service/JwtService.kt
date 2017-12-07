@@ -1,7 +1,6 @@
 package kissybnts.ktor_todo.app.service
 
 import kissybnts.ktor_todo.app.DefaultMessages
-import kissybnts.ktor_todo.app.EnvironmentVariableKeys
 import kissybnts.ktor_todo.app.JwtConstants
 import kissybnts.ktor_todo.app.model.UserModel
 import kissybnts.ktor_todo.app.objectMapper
@@ -10,6 +9,7 @@ import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.ktor.auth.Principal
+import kissybnts.ktor_todo.app.enumeration.TokenType
 import kotlinx.coroutines.experimental.async
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -56,14 +56,6 @@ class JwtService {
                 .setHeaderParam(JwtConstants.Header.TYPE_KEY, JwtConstants.Header.TYPE)
                 .compact()
     }
-}
-
-enum class TokenType(private val key: String, private val expirationKey: String) {
-    ACCESS_TOKEN(EnvironmentVariableKeys.JWT_SECRET_KEY, EnvironmentVariableKeys.JWT_EXPIRE_TIME),
-    REFRESH_TOKEN(EnvironmentVariableKeys.JWT_REFRESH_SECRET_KEY, EnvironmentVariableKeys.JWT_REFRESH_EXPIRE_TIME);
-
-    fun secretKey(): String = System.getenv(this.key)
-    fun hour(): Long = System.getenv(this.expirationKey).toLong()
 }
 
 data class JwtUserSubject(val id: Int): Principal {
