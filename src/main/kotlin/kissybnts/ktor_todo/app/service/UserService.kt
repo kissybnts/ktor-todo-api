@@ -91,4 +91,8 @@ class UserService(private val userRepository: UserRepository = UserRepository) {
         }
         return objectMapper.readValue(response.bodyStream.reader(Charsets.UTF_8), GitHubUser::class.java)
     }
+
+    fun selectById(id: Int): UserModel {
+        return userRepository.select(id)?: throw UserNotFoundException()
+    }
 }

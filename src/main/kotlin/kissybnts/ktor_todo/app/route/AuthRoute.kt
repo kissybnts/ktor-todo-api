@@ -12,6 +12,7 @@ import io.ktor.application.call
 import io.ktor.auth.OAuthAccessTokenResponse
 import io.ktor.auth.authentication
 import io.ktor.client.HttpClient
+import io.ktor.http.HttpMethod
 import io.ktor.locations.location
 import io.ktor.locations.locations
 import io.ktor.locations.oauthAtLocation
@@ -21,9 +22,12 @@ import io.ktor.request.port
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
+import io.ktor.routing.method
 import io.ktor.routing.param
+import kissybnts.ktor_todo.app.pipeline.jwtRefreshAuthentication
 import kissybnts.ktor_todo.app.request.LoginRequest
 import kissybnts.ktor_todo.app.request.SignUpRequest
+import kissybnts.ktor_todo.extension.jwtUserSubject
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import java.util.concurrent.Executors
 
@@ -32,21 +36,22 @@ import java.util.concurrent.Executors
 @location("/auth") class Auth {
     @location("/login") class Login
     @location("/sign-up") class SignUp
+    @location("/refresh") class Refresh
 }
 
 fun Route.auth(client: HttpClient, jwtService: JwtService = JwtService(), userService: UserService = UserService()) {
     val exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4)
 
-    post<Auth.Login> {
-        val request = call.receive<LoginRequest>()
-        val user = userService.loginWithEmail(request)
+    post<Auth.SignUp> {
+        val signUpRequest = call.receive<SignUpRequest>()
+        val user = userService.signUpWithEmail(signUpRequest)
         val tokenPair = jwtService.generateTokenPair(user)
         call.respond(LoginResponse(user, tokenPair.accessToken, tokenPair.refreshToken))
     }
 
-    post<Auth.SignUp> {
-        val signUpRequest = call.receive<SignUpRequest>()
-        val user = userService.signUpWithEmail(signUpRequest)
+    post<Auth.Login> {
+        val request = call.receive<LoginRequest>()
+        val user = userService.loginWithEmail(request)
         val tokenPair = jwtService.generateTokenPair(user)
         call.respond(LoginResponse(user, tokenPair.accessToken, tokenPair.refreshToken))
     }
@@ -73,6 +78,20 @@ fun Route.auth(client: HttpClient, jwtService: JwtService = JwtService(), userSe
             val tokenPair = jwtService.generateTokenPair(user)
 
             call.respond(LoginResponse(user, tokenPair.accessToken, tokenPair.refreshToken))
+        }
+    }
+
+    location<Auth.Refresh> {
+        method(HttpMethod.Post) {
+            authentication {
+                jwtRefreshAuthentication(jwtService)
+            }
+            handle {
+                val userSubject = call.jwtUserSubject()
+                val user = userService.selectById(userSubject.id)
+                val tokenPair = jwtService.generateTokenPair(user)
+                call.respond(tokenPair)
+            }
         }
     }
 }

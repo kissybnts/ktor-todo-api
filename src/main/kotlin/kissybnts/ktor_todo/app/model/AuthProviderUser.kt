@@ -6,11 +6,11 @@ import kissybnts.ktor_todo.app.enumeration.AuthProvider
 sealed class AuthProviderUser
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class GitHubUser(val id: Int, val login: String, val name: String, val avatarUrl: String): AuthProviderUser()
+data class GitHubUser(val id: Int, val login: String, val name: String? = null, val avatarUrl: String): AuthProviderUser()
 
 fun AuthProviderUser.toCushioningUser(providerCode: String): OAuthUser {
     return when (this) {
-        is GitHubUser -> OAuthUser(name, avatarUrl, AuthProvider.GitHub, providerCode, id)
+        is GitHubUser -> OAuthUser(name?: login, avatarUrl, AuthProvider.GitHub, providerCode, id)
     }
 }
 

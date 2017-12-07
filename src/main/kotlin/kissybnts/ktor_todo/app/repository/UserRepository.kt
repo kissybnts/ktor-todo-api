@@ -20,7 +20,7 @@ object UserRepository {
     // ---------------
     // Select
     // ---------------
-    fun select(id: Int): UserModel? = transaction { UserTable.select { UserTable.id.eq(id) } }.firstOrNull()?.let { UserModel(it) }
+    fun select(id: Int): UserModel? = transaction { UserTable.select { UserTable.id.eq(id) }.firstOrNull() }?.let { UserModel(it) }
 
     fun selectByProvider(providerType: AuthProvider, providerId: Int): UserModel? {
         return transaction {

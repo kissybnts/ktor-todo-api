@@ -39,9 +39,15 @@ class JwtService {
 
         val subject = jws.body.subject ?: throw InvalidCredentialException()
 
-        return try {
+        val user = try {
             objectMapper.readValue(subject, JwtUserSubject::class.java)
         } catch (ex: Exception) {
+            throw InvalidCredentialException()
+        }
+
+        if (user.type == type) {
+            return user
+        } else {
             throw InvalidCredentialException()
         }
     }
@@ -49,7 +55,7 @@ class JwtService {
     private fun generateToken(user: UserModel, type: TokenType): String {
         val expiration = LocalDateTime.now().plusHours(type.hour()).atZone(ZoneId.systemDefault())
         return Jwts.builder()
-                .setSubject(objectMapper.writeValueAsString(JwtUserSubject(user)))
+                .setSubject(objectMapper.writeValueAsString(JwtUserSubject(user, type)))
                 .setAudience(JwtConstants.Body.AUDIENCE)
                 .signWith(SignatureAlgorithm.HS512, type.secretKey())
                 .setExpiration(Date.from(expiration.toInstant()))
@@ -58,6 +64,6 @@ class JwtService {
     }
 }
 
-data class JwtUserSubject(val id: Int): Principal {
-    constructor(user: UserModel): this(user.id)
+data class JwtUserSubject(val id: Int, val type: TokenType): Principal {
+    constructor(user: UserModel, type: TokenType): this(user.id, type)
 }
