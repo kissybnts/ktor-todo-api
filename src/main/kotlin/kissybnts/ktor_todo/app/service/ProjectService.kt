@@ -8,6 +8,7 @@ import kissybnts.ktor_todo.app.repository.TaskRepository
 import kissybnts.ktor_todo.app.request.CreateProjectRequest
 import kissybnts.ktor_todo.app.response.ProjectResponse
 import kissybnts.ktor_todo.exception.ResourceNotFoundException
+import kotlinx.coroutines.experimental.async
 
 class ProjectService(private val projectRepository: ProjectRepository = ProjectRepository,
                      private val taskRepository: TaskRepository = TaskRepository,
@@ -16,19 +17,19 @@ class ProjectService(private val projectRepository: ProjectRepository = ProjectR
         fun resourceNotFoundException(projectId: Int) = ResourceNotFoundException(DefaultMessages.Error.resourceNotFound("Project", projectId))
     }
 
-    fun selectAll(userId: Int): List<ProjectResponse> {
-        val projects = projectRepository.selectAll(userId)
-        val tasks = taskService.selectAll(userId)
+    suspend fun selectAll(userId: Int): List<ProjectResponse> {
+        val projects = async { projectRepository.selectAll(userId) }
+        val tasks = async { taskService.selectAll(userId) }
 
-        return projects.map { p ->
-            ProjectResponse(p, tasks.filter { it.projectId == p.id })
+        return projects.await().map { p ->
+            ProjectResponse(p, tasks.await().filter { it.projectId == p.id })
         }
     }
 
-    fun select(projectId: Int, userId: Int): ProjectResponse {
-        val project = projectRepository.select(projectId, userId)?: throw resourceNotFoundException(projectId)
-        val tasks = taskService.selectAll(userId, projectId)
-        return ProjectResponse(project, tasks)
+    suspend fun select(projectId: Int, userId: Int): ProjectResponse {
+        val project = async { projectRepository.select(projectId, userId)?: throw resourceNotFoundException(projectId) }
+        val tasks = async { taskService.selectAll(userId, projectId) }
+        return ProjectResponse(project.await(), tasks.await())
     }
 
     fun selectTasks(projectId: Int, userId: Int): List<TaskModel> {
