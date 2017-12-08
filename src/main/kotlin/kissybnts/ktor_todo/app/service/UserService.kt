@@ -27,6 +27,10 @@ import java.sql.SQLIntegrityConstraintViolationException
 class UserService(private val userRepository: UserRepository = UserRepository) {
 
     fun signUpWithEmail(signUpRequest: SignUpRequest): UserModel {
+        if (userRepository.countByEmail(signUpRequest.email) > 0) {
+            throw IllegalStateException("${signUpRequest.email} is already registered.")
+        }
+
         val encrypted = PasswordEncryption.passwordEncrypt(signUpRequest.password)
         try {
             return userRepository.insert(signUpRequest.name, signUpRequest.email, encrypted)

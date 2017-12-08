@@ -35,6 +35,15 @@ object UserRepository {
     }
 
     // ---------------
+    // Count
+    // ---------------
+    fun countByEmail(email: String): Int {
+        return transaction {
+            UserTable.innerJoin(EmailCredentialTable).select { EmailCredentialTable.email.eq(email) }.count()
+        }
+    }
+
+    // ---------------
     // Insert
     // ---------------
     fun insert(OAuthUser: OAuthUser): UserModel = transaction { insertWithoutTransaction(OAuthUser) }
