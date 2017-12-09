@@ -38,7 +38,9 @@ import java.util.concurrent.Executors
     @location("/refresh") class Refresh
 }
 
-fun Route.auth(client: HttpClient, jwtService: JwtService = JwtService(), userService: UserService = UserService()) {
+fun Route.auth(client: HttpClient,
+               jwtService: JwtService = JwtService(),
+               userService: UserService = UserService()) {
     val exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4)
 
     post<Auth.SignUp> {

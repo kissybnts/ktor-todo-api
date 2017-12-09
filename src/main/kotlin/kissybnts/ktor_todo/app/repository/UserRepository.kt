@@ -16,19 +16,29 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 
-object UserRepository {
+interface UserRepositoryInterface {
+    fun select(id: Int): UserModel?
+    fun selectByProvider(providerType: AuthProvider, providerId: Int): UserModel?
+    fun selectByEmail(email: String): Pair<UserModel, EmailCredentialModel>?
+    fun countByEmail(email: String): Int
+    fun insert(OAuthUser: OAuthUser): UserModel
+    fun insert(name: String, email: String, password: String): UserModel
+    fun loginUpdate(userId: Int, code: String)
+}
+
+object UserRepository: UserRepositoryInterface {
     // ---------------
     // Select
     // ---------------
-    fun select(id: Int): UserModel? = transaction { UserTable.select { UserTable.id.eq(id) }.firstOrNull() }?.let { UserModel(it) }
+    override fun select(id: Int): UserModel? = transaction { UserTable.select { UserTable.id.eq(id) }.firstOrNull() }?.let { UserModel(it) }
 
-    fun selectByProvider(providerType: AuthProvider, providerId: Int): UserModel? {
+    override fun selectByProvider(providerType: AuthProvider, providerId: Int): UserModel? {
         return transaction {
             UserTable.innerJoin(OAuthCredentialTable).select { OAuthCredentialTable.providerType.eq(providerType) and OAuthCredentialTable.providerId.eq(providerId) }.firstOrNull()
         }?.let { UserModel(it) }
     }
 
-    fun selectByEmail(email: String): Pair<UserModel, EmailCredentialModel>? {
+    override fun selectByEmail(email: String): Pair<UserModel, EmailCredentialModel>? {
         return transaction {
             UserTable.innerJoin(EmailCredentialTable).select { EmailCredentialTable.email.eq(email) }.firstOrNull()
         }?.let { Pair(UserModel(it), EmailCredentialModel(it)) }
@@ -37,7 +47,7 @@ object UserRepository {
     // ---------------
     // Count
     // ---------------
-    fun countByEmail(email: String): Int {
+    override fun countByEmail(email: String): Int {
         return transaction {
             UserTable.innerJoin(EmailCredentialTable).select { EmailCredentialTable.email.eq(email) }.count()
         }
@@ -46,9 +56,9 @@ object UserRepository {
     // ---------------
     // Insert
     // ---------------
-    fun insert(OAuthUser: OAuthUser): UserModel = transaction { insertWithoutTransaction(OAuthUser) }
+    override fun insert(OAuthUser: OAuthUser): UserModel = transaction { insertWithoutTransaction(OAuthUser) }
 
-    fun insert(name: String, email: String, password: String): UserModel = transaction { insertWithoutTransaction(name, email, password) }
+    override fun insert(name: String, email: String, password: String): UserModel = transaction { insertWithoutTransaction(name, email, password) }
 
     private fun insertWithoutTransaction(OAuthUser: OAuthUser): UserModel {
         val now = DateTime()
@@ -94,7 +104,7 @@ object UserRepository {
     // ---------------
     // Update
     // ---------------
-    fun loginUpdate(userId: Int, code: String) {
+    override fun loginUpdate(userId: Int, code: String) {
         val now = DateTime()
         transaction {
             OAuthCredentialTable.update({ OAuthCredentialTable.userId.eq(userId) }) {

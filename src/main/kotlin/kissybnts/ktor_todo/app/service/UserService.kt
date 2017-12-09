@@ -17,6 +17,7 @@ import io.ktor.client.utils.url
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import kissybnts.ktor_todo.app.DefaultMessages
+import kissybnts.ktor_todo.app.repository.UserRepositoryInterface
 import kissybnts.ktor_todo.app.request.LoginRequest
 import kissybnts.ktor_todo.app.request.SignUpRequest
 import kissybnts.ktor_todo.app.utils.PasswordEncryption
@@ -24,7 +25,7 @@ import kissybnts.ktor_todo.exception.InvalidCredentialException
 import kissybnts.ktor_todo.exception.UserNotFoundException
 import java.sql.SQLIntegrityConstraintViolationException
 
-class UserService(private val userRepository: UserRepository = UserRepository) {
+class UserService(private val userRepository: UserRepositoryInterface = UserRepository) {
 
     fun signUpWithEmail(signUpRequest: SignUpRequest): UserModel {
         if (userRepository.countByEmail(signUpRequest.email) > 0) {
