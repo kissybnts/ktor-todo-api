@@ -26,12 +26,6 @@ object TaskRepository {
         return transaction { joinOnlyProjectId(userId).select { TaskTable.projectId.eq(projectId) }.orderBy(TaskTable.id, true).map { TaskModel(it) } }
     }
 
-    fun selectAllBelongProject(projectId: Int, userId: Int): List<TaskModel> {
-        return transaction {
-            TaskTable.innerJoin(ProjectTable).select { TaskTable.projectId.eq(projectId) and ProjectTable.userId.eq(userId) }.orderBy(TaskTable.id, true).map { TaskModel(it) }
-        }
-    }
-
     fun select(id: Int): TaskModel? = transaction { TaskTable.select { TaskTable.id.eq(id) }.firstOrNull()?.let { TaskModel(it) } }
 
     // ---------------
