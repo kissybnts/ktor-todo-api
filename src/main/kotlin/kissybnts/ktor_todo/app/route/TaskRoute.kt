@@ -37,7 +37,7 @@ internal fun Route.tasks(taskService: TaskService = TaskService(),
         val request = call.receive<CreateTaskRequest>()
         projectService.checkIsUsersProject(request.projectId, principal.id)
 
-        val task = taskService.create(request, principal.id)
+        val task = taskService.create(request)
         call.respond(task)
     }
 
