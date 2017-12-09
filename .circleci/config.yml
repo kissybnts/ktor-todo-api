@@ -39,4 +39,8 @@ jobs:
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
-      - run: ./gradlew test
+      - run:
+        name: Testing
+        command: ./gradlew test
+        environment:
+          PASSWORD_CRYPT_KEY: YKo83n14SWf7o8G5
