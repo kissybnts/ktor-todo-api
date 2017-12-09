@@ -11,27 +11,40 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-object TaskRepository {
+interface TaskRepositoryInterface {
+    // Select
+    fun selectAll(userId: Int): List<TaskModel>
+    fun selectAll(userId: Int, projectId: Int): List<TaskModel>
+    fun select(id: Int): TaskModel?
+    // Insert
+    fun insert(request: CreateTaskRequest): TaskModel
+    // Update
+    fun update(id: Int, request: UpdateTaskRequest, userId: Int): Int
+    fun complete(id: Int, userId: Int): Int
+    fun complete(ids: List<Int>, userId: Int): Int
+}
+
+object TaskRepository : TaskRepositoryInterface {
     // ---------------
     // Select
     // ---------------
-    fun selectAll(userId: Int): List<TaskModel> {
+    override fun selectAll(userId: Int): List<TaskModel> {
         // transaction{}.map{}をするとNo transactionでエラーを吐く
         return transaction {
             (TaskTable innerJoin ProjectTable).slice(TaskTable.columns).select { ProjectTable.userId.eq(userId) }.orderBy(TaskTable.id, true).map { TaskModel(it) }
         }
     }
 
-    fun selectAll(userId: Int, projectId: Int): List<TaskModel> {
+    override fun selectAll(userId: Int, projectId: Int): List<TaskModel> {
         return transaction { joinOnlyProjectId(userId).select { TaskTable.projectId.eq(projectId) }.orderBy(TaskTable.id, true).map { TaskModel(it) } }
     }
 
-    fun select(id: Int): TaskModel? = transaction { TaskTable.select { TaskTable.id.eq(id) }.firstOrNull()?.let { TaskModel(it) } }
+    override fun select(id: Int): TaskModel? = transaction { TaskTable.select { TaskTable.id.eq(id) }.firstOrNull()?.let { TaskModel(it) } }
 
     // ---------------
     // Insert
     // ---------------
-    fun insert(request: CreateTaskRequest): TaskModel = transaction { insertWithoutTransaction(request) }
+    override fun insert(request: CreateTaskRequest): TaskModel = transaction { insertWithoutTransaction(request) }
 
     private fun insertWithoutTransaction(request: CreateTaskRequest): TaskModel {
         val now = DateTime()
@@ -53,7 +66,7 @@ object TaskRepository {
     /**
      * Update the specified task according to the request using transaction.
      */
-    fun update(id: Int, request: UpdateTaskRequest, userId: Int): Int = transaction { updateWithoutTransaction(id, request, userId) }
+    override fun update(id: Int, request: UpdateTaskRequest, userId: Int): Int = transaction { updateWithoutTransaction(id, request, userId) }
 
     private fun updateWithoutTransaction(id: Int, request: UpdateTaskRequest, userId: Int): Int {
         return joinOnlyProjectId(userId).update({ TaskTable.id.eq(id) }) {
@@ -67,7 +80,7 @@ object TaskRepository {
     // ---------------
     // Complete
     // ---------------
-    fun complete(id: Int, userId: Int): Int = transaction { completeWithoutTransaction(id, userId) }
+    override fun complete(id: Int, userId: Int): Int = transaction { completeWithoutTransaction(id, userId) }
 
     private fun completeWithoutTransaction(id: Int, userId: Int): Int {
         return joinOnlyProjectId(userId).update({ TaskTable.id.eq(id) }) {
@@ -76,7 +89,7 @@ object TaskRepository {
         }
     }
 
-    fun complete(ids: List<Int>, userId: Int) = transaction { completeWithoutTransaction(ids, userId) }
+    override fun complete(ids: List<Int>, userId: Int) = transaction { completeWithoutTransaction(ids, userId) }
 
     private fun completeWithoutTransaction(ids: List<Int>, userId: Int): Int {
         val now = DateTime()

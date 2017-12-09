@@ -2,14 +2,13 @@ package kissybnts.ktor_todo.app.service
 
 import kissybnts.ktor_todo.app.DefaultMessages
 import kissybnts.ktor_todo.app.model.TaskModel
-import kissybnts.ktor_todo.app.repository.ProjectRepository
 import kissybnts.ktor_todo.app.repository.TaskRepository
+import kissybnts.ktor_todo.app.repository.TaskRepositoryInterface
 import kissybnts.ktor_todo.app.request.CreateTaskRequest
 import kissybnts.ktor_todo.app.request.UpdateTaskRequest
 import kissybnts.ktor_todo.exception.ResourceNotFoundException
 
-class TaskService(private val taskRepository: TaskRepository = TaskRepository,
-                  private val projectRepository: ProjectRepository = ProjectRepository) {
+class TaskService(private val taskRepository: TaskRepositoryInterface = TaskRepository) {
     companion object {
         fun resourceNotFoundException(projectId: Int) = ResourceNotFoundException(DefaultMessages.Error.resourceNotFound("Task", projectId))
     }
