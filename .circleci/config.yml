@@ -40,7 +40,6 @@ jobs:
 
       # run tests!
       - run:
-        name: Testing
-        command: ./gradlew test
+        name: ./gradlew test
         environment:
           PASSWORD_CRYPT_KEY: YKo83n14SWf7o8G5
