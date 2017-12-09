@@ -23,8 +23,6 @@ class TaskService(private val taskRepository: TaskRepository = TaskRepository,
     }
 
     fun create(request: CreateTaskRequest, userId: Int): TaskModel {
-        checkIsUsersProject(request.projectId, userId)
-
         return taskRepository.insert(request)
     }
 
@@ -41,16 +39,6 @@ class TaskService(private val taskRepository: TaskRepository = TaskRepository,
             throw resourceNotFoundException(taskId)
         }
     }
-
-    /**
-     * Check whether the specified project is user's one or not.
-     *
-     * @throws ResourceNotFoundException in case of the project is not user's one
-     */
-    private fun checkIsUsersProject(projectId: Int, userId: Int) {
-        projectRepository.select(projectId, userId) ?: ProjectService.resourceNotFoundException(projectId)
-    }
-
 
     private fun resourceNotFoundException(taskId: Int) = Companion.resourceNotFoundException(taskId)
 }

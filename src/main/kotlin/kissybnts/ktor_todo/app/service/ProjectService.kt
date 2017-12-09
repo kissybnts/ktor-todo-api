@@ -41,4 +41,15 @@ class ProjectService(private val projectRepository: ProjectRepositoryInterface =
     }
 
     private fun resourceNotFoundException(projectId: Int) = Companion.resourceNotFoundException(projectId)
+
+    /**
+     * Check whether the specified project is user's one or not.
+     *
+     * @throws ResourceNotFoundException in case of the project is not user's one
+     */
+    fun checkIsUsersProject(projectId: Int, userId: Int) {
+        if (projectRepository.count(projectId, userId) == 0) {
+            throw ProjectService.resourceNotFoundException(projectId)
+        }
+    }
 }

@@ -13,6 +13,7 @@ import org.joda.time.DateTime
 interface ProjectRepositoryInterface {
     fun selectAll(userId: Int): List<ProjectModel>
     fun select(id: Int, userId: Int): ProjectModel?
+    fun count(id: Int, userId: Int): Int
     fun insert(project: CreateProjectRequest, userId: Int): ProjectModel
 }
 
@@ -20,6 +21,8 @@ object ProjectRepository : ProjectRepositoryInterface {
     override fun selectAll(userId: Int): List<ProjectModel> = transaction { ProjectTable.select { ProjectTable.userId.eq(userId) }.orderBy(ProjectTable.id, true).map { ProjectModel(it) } }
 
     override fun select(id: Int, userId: Int): ProjectModel? = transaction { ProjectTable.select { ProjectTable.id.eq(id) and ProjectTable.userId.eq(userId) }.firstOrNull()?.let { ProjectModel(it) } }
+
+    override fun count(id: Int, userId: Int): Int = transaction { ProjectTable.select { ProjectTable.id.eq(id) and ProjectTable.userId.eq(userId) }.count() }
 
     override fun insert(project: CreateProjectRequest, userId: Int): ProjectModel {
         val now = DateTime()

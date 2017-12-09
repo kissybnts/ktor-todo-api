@@ -13,6 +13,7 @@ import io.ktor.locations.post
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
+import kissybnts.ktor_todo.app.service.ProjectService
 
 @location("/tasks") internal class Tasks {
     @location("/{taskId}") data class Id(val taskId: Int) {
@@ -22,7 +23,8 @@ import io.ktor.routing.Route
     }
 }
 
-internal fun Route.tasks(taskService: TaskService = TaskService()) {
+internal fun Route.tasks(taskService: TaskService = TaskService(),
+                         projectService: ProjectService = ProjectService()) {
     get<Tasks> {
         val principal = call.jwtUserSubject()
 
@@ -33,6 +35,7 @@ internal fun Route.tasks(taskService: TaskService = TaskService()) {
     post<Tasks> {
         val principal = call.jwtUserSubject()
         val request = call.receive<CreateTaskRequest>()
+        projectService.checkIsUsersProject(request.projectId, principal.id)
 
         val task = taskService.create(request, principal.id)
         call.respond(task)
