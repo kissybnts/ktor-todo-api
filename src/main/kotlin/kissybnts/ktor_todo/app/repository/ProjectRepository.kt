@@ -10,12 +10,18 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-object ProjectRepository {
-    fun selectAll(userId: Int): List<ProjectModel> = transaction { ProjectTable.select { ProjectTable.userId.eq(userId) }.orderBy(ProjectTable.id, true).map { ProjectModel(it) } }
+interface ProjectRepositoryInterface {
+    fun selectAll(userId: Int): List<ProjectModel>
+    fun select(id: Int, userId: Int): ProjectModel?
+    fun insert(project: CreateProjectRequest, userId: Int): ProjectModel
+}
 
-    fun select(id: Int, userId: Int): ProjectModel? = transaction { ProjectTable.select { ProjectTable.id.eq(id) and ProjectTable.userId.eq(userId) }.firstOrNull()?.let { ProjectModel(it) } }
+object ProjectRepository : ProjectRepositoryInterface {
+    override fun selectAll(userId: Int): List<ProjectModel> = transaction { ProjectTable.select { ProjectTable.userId.eq(userId) }.orderBy(ProjectTable.id, true).map { ProjectModel(it) } }
 
-    fun insert(project: CreateProjectRequest, userId: Int): ProjectModel {
+    override fun select(id: Int, userId: Int): ProjectModel? = transaction { ProjectTable.select { ProjectTable.id.eq(id) and ProjectTable.userId.eq(userId) }.firstOrNull()?.let { ProjectModel(it) } }
+
+    override fun insert(project: CreateProjectRequest, userId: Int): ProjectModel {
         val now = DateTime()
         val statement = transaction {
             ProjectTable.insert {

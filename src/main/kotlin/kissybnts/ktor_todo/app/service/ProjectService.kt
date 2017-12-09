@@ -4,12 +4,13 @@ import kissybnts.ktor_todo.app.DefaultMessages
 import kissybnts.ktor_todo.app.model.ProjectModel
 import kissybnts.ktor_todo.app.model.TaskModel
 import kissybnts.ktor_todo.app.repository.ProjectRepository
+import kissybnts.ktor_todo.app.repository.ProjectRepositoryInterface
 import kissybnts.ktor_todo.app.request.CreateProjectRequest
 import kissybnts.ktor_todo.app.response.ProjectResponse
 import kissybnts.ktor_todo.exception.ResourceNotFoundException
 import kotlinx.coroutines.experimental.async
 
-class ProjectService(private val projectRepository: ProjectRepository = ProjectRepository,
+class ProjectService(private val projectRepository: ProjectRepositoryInterface = ProjectRepository,
                      private val taskService: TaskService = TaskService()) {
     companion object {
         fun resourceNotFoundException(projectId: Int) = ResourceNotFoundException(DefaultMessages.Error.resourceNotFound("Project", projectId))
