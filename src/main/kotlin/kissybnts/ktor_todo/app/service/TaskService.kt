@@ -10,7 +10,7 @@ import kissybnts.ktor_todo.exception.ResourceNotFoundException
 
 class TaskService(private val taskRepository: TaskRepositoryInterface = TaskRepository) {
     companion object {
-        fun resourceNotFoundException(projectId: Int) = ResourceNotFoundException(DefaultMessages.Error.resourceNotFound("Task", projectId))
+        fun resourceNotFoundException(projectId: Int): Nothing = throw ResourceNotFoundException(DefaultMessages.Error.resourceNotFound("Task", projectId))
     }
 
     fun selectAll(userId: Int): List<TaskModel> {
@@ -21,23 +21,23 @@ class TaskService(private val taskRepository: TaskRepositoryInterface = TaskRepo
         return taskRepository.selectAll(userId, projectId)
     }
 
-    fun create(request: CreateTaskRequest, userId: Int): TaskModel {
+    fun create(request: CreateTaskRequest): TaskModel {
         return taskRepository.insert(request)
     }
 
     fun update(taskId: Int, request: UpdateTaskRequest, userId: Int) {
         val updated = taskRepository.update(taskId, request, userId)
         if (updated != 1) {
-            throw resourceNotFoundException(taskId)
+            resourceNotFoundException(taskId)
         }
     }
 
     fun complete(taskId: Int, userId: Int) {
         val completed = taskRepository.complete(taskId, userId)
         if (completed != 1) {
-            throw resourceNotFoundException(taskId)
+            resourceNotFoundException(taskId)
         }
     }
 
-    private fun resourceNotFoundException(taskId: Int) = Companion.resourceNotFoundException(taskId)
+    private fun resourceNotFoundException(taskId: Int): Nothing = Companion.resourceNotFoundException(taskId)
 }

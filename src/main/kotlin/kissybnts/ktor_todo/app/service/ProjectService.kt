@@ -13,7 +13,7 @@ import kotlinx.coroutines.experimental.async
 class ProjectService(private val projectRepository: ProjectRepositoryInterface = ProjectRepository,
                      private val taskService: TaskService = TaskService()) {
     companion object {
-        fun resourceNotFoundException(projectId: Int) = ResourceNotFoundException(DefaultMessages.Error.resourceNotFound("Project", projectId))
+        fun resourceNotFoundException(projectId: Int): Nothing = throw ResourceNotFoundException(DefaultMessages.Error.resourceNotFound("Project", projectId))
     }
 
     suspend fun selectAll(userId: Int): List<ProjectResponse> {
@@ -26,7 +26,7 @@ class ProjectService(private val projectRepository: ProjectRepositoryInterface =
     }
 
     suspend fun select(projectId: Int, userId: Int): ProjectResponse {
-        val project = async { projectRepository.select(projectId, userId)?: throw resourceNotFoundException(projectId) }
+        val project = async { projectRepository.select(projectId, userId)?: resourceNotFoundException(projectId) }
         val tasks = async { taskService.selectAll(userId, projectId) }
         return ProjectResponse(project.await(), tasks.await())
     }
@@ -40,8 +40,6 @@ class ProjectService(private val projectRepository: ProjectRepositoryInterface =
         return projectRepository.insert(request, userId)
     }
 
-    private fun resourceNotFoundException(projectId: Int) = Companion.resourceNotFoundException(projectId)
-
     /**
      * Check whether the specified project is user's one or not.
      *
@@ -49,7 +47,9 @@ class ProjectService(private val projectRepository: ProjectRepositoryInterface =
      */
     fun checkIsUsersProject(projectId: Int, userId: Int) {
         if (projectRepository.count(projectId, userId) == 0) {
-            throw ProjectService.resourceNotFoundException(projectId)
+            resourceNotFoundException(projectId)
         }
     }
+
+    private fun resourceNotFoundException(projectId: Int): Nothing = Companion.resourceNotFoundException(projectId)
 }
