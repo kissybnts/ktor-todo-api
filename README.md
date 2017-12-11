@@ -1,11 +1,11 @@
 Environment variables
-- `ORG_GRADLE_PROJECT_DB_HOST` : Hostname or IP address of the database to be connected from this application
+- `DB_HOST` : Hostname or IP address of the database to be connected from this application
     - Default : `127.0.0.1` 
-- `ORG_GRADLE_PROJECT_DB_PORT` : The port of the database to be connected from this application
+- `DB_PORT` : The port of the database to be connected from this application
     - Default : `3306`
-- `ORG_GRADLE_PROJECT_DB_NAME` : The name of the database used in this application
+- `DB_NAME` : The name of the database used in this application
     - Default : `ktor-todo`
-- `ORG_GRADLE_PROJECT_DB_USER` : The user to connect the database
+- `DB_USER` : The user to connect the database
     - Default : `root`
-- `ORG_GRADLE_PROJECT_DB_PASS` : The password to connect the database
+- `DB_PASS` : The password to connect the database
     - Default : blank

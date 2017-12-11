@@ -8,17 +8,12 @@ import io.ktor.auth.OAuthServerSettings
 val objectMapper: ObjectMapper = jacksonObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
 
 object EnvironmentVariableKeys {
-    /**
-     * All key has the prefix `ORG_GRADLE_PROJECT_`
-     */
-    object Gradle {
-        private const val GRADLE_ENV = "ORG_GRADLE_PROJECT_"
-        const val DB_HOST: String = "${GRADLE_ENV}DB_HOST"
-        const val DB_PORT: String = "${GRADLE_ENV}DB_PORT"
-        const val DB_NAME: String = "${GRADLE_ENV}DB_NAME"
-        const val DB_USER: String = "${GRADLE_ENV}DB_USER"
-        const val DB_PASS: String = "${GRADLE_ENV}DB_PASS"
-    }
+    // DB
+    const val DB_HOST: String = "DB_HOST"
+    const val DB_PORT: String = "DB_PORT"
+    const val DB_NAME: String = "DB_NAME"
+    const val DB_USER: String = "DB_USER"
+    const val DB_PASS: String = "DB_PASS"
     // JWT
     const val JWT_SECRET_KEY: String = "JWT_SECRET_KEY"
     const val JWT_EXPIRE_TIME: String = "JWT_EXPIRE_TIME"

@@ -36,11 +36,11 @@ import kissybnts.ktor_todo.exception.UserNotFoundException
  */
 internal fun Database.Companion.setUp(databaseConfig: ApplicationConfig) {
     apply {
-        val host = getEnv(EnvironmentVariableKeys.Gradle.DB_HOST, "127.0.0.1")
-        val port = getEnv(EnvironmentVariableKeys.Gradle.DB_PORT, "3306")
-        val name = getEnv(EnvironmentVariableKeys.Gradle.DB_NAME, "ktor-todo")
-        val user = getEnv(EnvironmentVariableKeys.Gradle.DB_USER, "root")
-        val password = getEnv(EnvironmentVariableKeys.Gradle.DB_PASS, "")
+        val host = getEnv(EnvironmentVariableKeys.DB_HOST, "127.0.0.1")
+        val port = getEnv(EnvironmentVariableKeys.DB_PORT, "3306")
+        val name = getEnv(EnvironmentVariableKeys.DB_NAME, "ktor-todo")
+        val user = getEnv(EnvironmentVariableKeys.DB_USER, "root")
+        val password = getEnv(EnvironmentVariableKeys.DB_PASS, "")
         val driver = databaseConfig.property("driver").getString()
         connect("jdbc:mysql://$host:$port/$name?useSSL=false", driver, user, password)
     }

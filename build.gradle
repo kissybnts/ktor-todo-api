@@ -99,7 +99,7 @@ flyway {
     def host = System.getenv('DB_HOST')?: '127.0.0.1'
     def port = System.getenv('DB_PORT')?: '3306'
     def name = System.getenv('DB_NAME')?: 'ktor-todo'
-    user = System.getenv('DB_USER')?: 'user'
-    password = System.getenv('DB_PASS')?: 'user'
+    user = System.getenv('DB_USER')?: 'root'
+    password = System.getenv('DB_PASS')?: 'root'
     url = "jdbc:mysql://$host:$port/$name"
 }
