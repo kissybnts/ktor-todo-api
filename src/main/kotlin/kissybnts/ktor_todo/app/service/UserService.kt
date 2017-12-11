@@ -3,7 +3,7 @@ package kissybnts.ktor_todo.app.service
 import kissybnts.ktor_todo.app.enumeration.AuthProvider
 import kissybnts.ktor_todo.app.model.GitHubUser
 import kissybnts.ktor_todo.app.model.UserModel
-import kissybnts.ktor_todo.app.model.toCushioningUser
+import kissybnts.ktor_todo.app.model.toOAuthUser
 import kissybnts.ktor_todo.app.objectMapper
 import kissybnts.ktor_todo.app.model.OAuthUser
 import kissybnts.ktor_todo.app.repository.UserRepository
@@ -83,7 +83,7 @@ class UserService(private val userRepository: UserRepositoryInterface = UserRepo
         return when (providerType) {
             AuthProvider.GitHub -> {
                 val githubUser = acquireGitHubUser(accessToken)
-                githubUser.toCushioningUser(code)
+                githubUser.toOAuthUser(code)
             }
         }
     }
